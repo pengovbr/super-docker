@@ -32,7 +32,7 @@ containers-erase:
 containers-build:
 		@echo "Vamos tentar buildar todos os conteineres usando o registry $(DOCKER_REGISTRY) com a tag $(DOCKER_CONTAINER_VERSAO_PRODUTO)"
 		@echo ""
-		@make -C ../containers IMAGEM_BASE_JOD=$(IMAGEM_BASE_JOD_SOLR) IMAGEM_BASE_MARIADB=$(IMAGEM_BASE_MARIADB) IMAGEM_BASE_SQLSERVER=$(IMAGEM_BASE_SQLSERVER) IMAGEM_BASE_ORACLE=$(IMAGEM_BASE_ORACLE) build-conteiners
+		@make -C ../containers IMAGEM_BASE_JOD_SOLR=$(IMAGEM_BASE_JOD_SOLR) IMAGEM_BASE_MARIADB=$(IMAGEM_BASE_MARIADB) IMAGEM_BASE_SQLSERVER=$(IMAGEM_BASE_SQLSERVER) IMAGEM_BASE_ORACLE=$(IMAGEM_BASE_ORACLE) build-conteiners
 		@echo ""
 		@echo "Imagens criadas. Vamos verificar se as imagens encontram-se presentes"
 		@for i in $(CONTAINERS_LIST); \
