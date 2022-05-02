@@ -11,14 +11,16 @@ ARG IMAGEM_BASE=supergovbr/base-sqlserver2017:latest
 
 FROM ${IMAGEM_BASE}
 
-ENV TERM xterm
-ENV ACCEPT_EULA=Y
-ENV SA_PASSWORD='yourStrong(!)Password'
+ARG DB_COMMITHASH_BASEREF=eb81bfdc4bf1acd5d40369cfdd01adf6aa31a4c2
+
+ENV TERM xterm \
+    ACCEPT_EULA=Y \
+    SA_PASSWORD='yourStrong(!)Password'
 
 ADD assets/install.sh \
     assets/restore.sql \
-    https://github.com/spbgovbr/sei-db-ref-executivo/raw/eb81bfdc4bf1acd5d40369cfdd01adf6aa31a4c2/sqlserver/v4.0.0/sei_4_0_0_BD_Ref_Exec.bak \
-    https://github.com/spbgovbr/sei-db-ref-executivo/raw/eb81bfdc4bf1acd5d40369cfdd01adf6aa31a4c2/sqlserver/v4.0.0/sip_4_0_0_BD_Ref_Exec.bak \
+    https://github.com/spbgovbr/sei-db-ref-executivo/raw/${DB_COMMITHASH_BASEREF}/sqlserver/v4.0.0/sei_4_0_0_BD_Ref_Exec.bak \
+    https://github.com/spbgovbr/sei-db-ref-executivo/raw/${DB_COMMITHASH_BASEREF}/sqlserver/v4.0.0/sip_4_0_0_BD_Ref_Exec.bak \
     /tmp/
 
 RUN bash /install.sh

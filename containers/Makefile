@@ -26,6 +26,10 @@ ifdef IMAGEM_BASE_ORACLE
 BUILD_ARGS_ORACLE="--build-arg IMAGEM_BASE=$(IMAGEM_BASE_ORACLE)"
 endif
 
+ifdef DB_COMMITHASH_BASEREF
+BUILD_ARGS_DB="--build-arg DB_COMMITHASH_BASEREF=${DB_COMMITHASH_BASEREF}"
+endif
+
 ## help: Lista de comandos disponiveis e descricao. Voce pode usar TAB para completar os comandos
 help:
 		@fgrep -h "##" $(MAKEFILE_LIST) | fgrep -v fgrep | sed -e 's/\\$$//' | sed -e 's/## //'
@@ -128,7 +132,7 @@ erase-conteiner-solr:
 
 
 ## erase-conteiners-local: apagar todas as imagens do projeto
-erase-conteiners-local: erase-conteiner-base-centos erase-conteiner-memcached erase-conteiner-jod erase-conteiner-mailcatcher erase-conteiner-base-mariadb erase-conteiner-mariadb erase-conteiner-base-sqlserver erase-conteiner-sqlserver erase-conteiner-base-oracle erase-conteiner-oracle erase-conteiner-solr
+erase-conteiners-local: erase-conteiner-solr erase-conteiner-memcached erase-conteiner-jod erase-conteiner-mailcatcher erase-conteiner-mariadb erase-conteiner-base-mariadb erase-conteiner-sqlserver erase-conteiner-base-sqlserver erase-conteiner-oracle erase-conteiner-base-oracle erase-conteiner-base-centos
 
 
 ######################################################
@@ -177,7 +181,7 @@ build-conteiner-mariadb:
 		@make IMAGEMTMP=mariadb10.5 \
 		      IMAGEMTMP_VERSAO=$(DOCKER_CONTAINER_VERSAO_PRODUTO) \
 					IMAGEMTMP_PATH=databases/mariadb \
-					BUILD_ARGS=$(BUILD_ARGS_MARIADB) \
+					BUILD_ARGS=$(BUILD_ARGS_MARIADB)\ $(BUILD_ARGS_DB) \
 					build-conteiner-generic
 
 build-conteiner-base-sqlserver:
@@ -190,7 +194,7 @@ build-conteiner-sqlserver:
 		@make IMAGEMTMP=sqlserver2017 \
 		      IMAGEMTMP_VERSAO=$(DOCKER_CONTAINER_VERSAO_PRODUTO) \
 					IMAGEMTMP_PATH=databases/sqlserver \
-					BUILD_ARGS=$(BUILD_ARGS_SQLSERVER) \
+					BUILD_ARGS=$(BUILD_ARGS_SQLSERVER)\ $(BUILD_ARGS_DB) \
 					build-conteiner-generic
 
 build-conteiner-base-oracle:
@@ -203,7 +207,7 @@ build-conteiner-oracle:
 		@make IMAGEMTMP=oracle11g \
 		      IMAGEMTMP_VERSAO=$(DOCKER_CONTAINER_VERSAO_PRODUTO) \
 					IMAGEMTMP_PATH=databases/oracle \
-					BUILD_ARGS=$(BUILD_ARGS_ORACLE) \
+					BUILD_ARGS=$(BUILD_ARGS_ORACLE)\ $(BUILD_ARGS_DB) \
 					build-conteiner-generic
 
 build-conteiner-solr:
@@ -279,4 +283,6 @@ publish-container-solr:
 		@make IMAGEMTMP=solr8.2.0 IMAGEMTMP_VERSAO=$(DOCKER_CONTAINER_VERSAO_PRODUTO) publish-container-generic
 
 
-publish-containers: publish-container-base-centos publish-container-memcached publish-container-jod publish-container-mailcatcher publish-container-base-mariadb publish-container-mariadb publish-container-base-sqlserver publish-container-sqlserver publish-container-base-oracle publish-container-oracle publish-container-solr
+publish-containersold: publish-container-base-centos publish-container-memcached publish-container-jod publish-container-mailcatcher publish-container-base-mariadb publish-container-mariadb publish-container-base-sqlserver publish-container-sqlserver publish-container-base-oracle publish-container-oracle publish-container-solr
+publish-containers:
+		echo "publiquei"
