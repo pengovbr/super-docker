@@ -1,21 +1,41 @@
 SHELL := /bin/bash
 
-DOCKER_REGISTRY=supergovbr
-# nao mude a var abaixo qd for testar, caso contrario o makefile de conteiner vai tagear o conteiner de teste como latest
-# como um dos testes eh enviar as imagens para o seu registry isso geralmente n eh o que se deseja (enviar imagem de teste como latest)
-DOCKER_CONTAINER_VERSAO_PRODUTO=test
-CONTAINERS_LIST=base-centos7 memcached jod mailcatcher base-mariadb10.5 mariadb10.5 base-sqlserver2017 sqlserver2017 base-oracle11g oracle11g solr8.2.0
-
-IMAGEM_BASE_JOD_SOLR=supergovbr/base-centos7:test
-IMAGEM_BASE_MARIADB=supergovbr/base-mariadb10.5:test
-IMAGEM_BASE_ORACLE=supergovbr/base-oracle11g:test
-IMAGEM_BASE_SQLSERVER=supergovbr/base-sqlserver2017:test
+ifneq ("$(wildcard envcontainers-test.env)","")
+include envcontainers-test.env
+endif
 
 
-containers-erase:
+CONTAINERS_LIST=base-centos7 memcached jod mailcatcher base-mariadb10.5 mariadb10.5 base-sqlserver2017 sqlserver2017 base-oracle11g oracle11g solr8.2.0 base-app app-dev app-ci
+
+getenv-test:
+		@cp -f envcontainers-test.env.modelo envcontainers-test.env
+		@echo "Arquivo envcontainers-test.env criado com valores default.";
+		@echo "Abra o arquivo e faca as alteracoes."; 
+
+envcontainers-test.env:
+		@echo "Arquivo env nao encontrado para os testes nas operacoes de containeres."
+		@echo "Ha um arquivo modelo (envcontainers-test.env.modelo) que vc pode usar para preencher com suas informacoes."
+		@echo "Basta rodar make getenv-test"
+		@echo "Em seguida, altere nesse arquivo as informacoes para os testes no seu ambiente"
+		exit 1
+
+verificar-arquivo-env-containers:
+		@if test -f ../envcontainers.env; then \
+		    echo "Um arquivo envcontainers.env foi encontrado em ../"; \
+				echo "Apague esse arquivo antes de prosseguir, pois o teste usa o seu env proprio (envcontainers-test.env)"; \
+				exit 1; \
+		fi
+
+verificar-test-envs: envcontainers-test.env verificar-arquivo-env-containers
+
+teste: envcontainers-test.env
+		make erase-conteiners-local
+
+
+containers-erase: verificar-test-envs
 		@echo "Vamos tentar apagar todos os conteineres locais com o registry $(DOCKER_REGISTRY) com a tag $(DOCKER_CONTAINER_VERSAO_PRODUTO)"
 		@echo ""
-		@make -C ../containers erase-conteiners-local
+		@make -C ../ DOCKER_REGISTRY=$(DOCKER_REGISTRY) DOCKER_CONTAINER_VERSAO_PRODUTO=$(DOCKER_CONTAINER_VERSAO_PRODUTO) erase-conteiners-local
 		@echo ""
 		@echo "Imagens apagadas. Vamos verificar se as imagens nao se encontram presentes"
 		@for i in $(CONTAINERS_LIST); \
@@ -29,10 +49,10 @@ containers-erase:
 				fi; \
 		done
 
-containers-build:
+containers-build: verificar-test-envs
 		@echo "Vamos tentar buildar todos os conteineres usando o registry $(DOCKER_REGISTRY) com a tag $(DOCKER_CONTAINER_VERSAO_PRODUTO)"
 		@echo ""
-		@make -C ../containers IMAGEM_BASE_JOD_SOLR=$(IMAGEM_BASE_JOD_SOLR) IMAGEM_BASE_MARIADB=$(IMAGEM_BASE_MARIADB) IMAGEM_BASE_SQLSERVER=$(IMAGEM_BASE_SQLSERVER) IMAGEM_BASE_ORACLE=$(IMAGEM_BASE_ORACLE) build-conteiners
+		@make -C ../ DOCKER_REGISTRY=$(DOCKER_REGISTRY) DOCKER_CONTAINER_VERSAO_PRODUTO=$(DOCKER_CONTAINER_VERSAO_PRODUTO) IMAGEM_BASE_CENTOS=$(IMAGEM_BASE_CENTOS) IMAGEM_BASE_CENTOS_VERSAO=$(IMAGEM_BASE_CENTOS_VERSAO) IMAGEM_BASE_MARIADB=$(IMAGEM_BASE_MARIADB) IMAGEM_BASE_MARIADB_VERSAO=$(IMAGEM_BASE_MARIADB_VERSAO) IMAGEM_BASE_SQLSERVER=$(IMAGEM_BASE_SQLSERVER) IMAGEM_BASE_SQLSERVER_VERSAO=$(IMAGEM_BASE_SQLSERVER_VERSAO) IMAGEM_BASE_ORACLE=$(IMAGEM_BASE_ORACLE) IMAGEM_BASE_ORACLE_VERSAO=$(IMAGEM_BASE_ORACLE_VERSAO) IMAGEM_BASE_APP=$(IMAGEM_BASE_APP) IMAGEM_BASE_APP_VERSAO=$(IMAGEM_BASE_APP_VERSAO) IMAGEM_BASE_PHPMEMCACHEDADMIN=$(IMAGEM_BASE_PHPMEMCACHEDADMIN) IMAGEM_BASE_PHPMEMCACHEDADMIN_VERSAO=$(IMAGEM_BASE_PHPMEMCACHEDADMIN_VERSAO) IMAGEM_BASE_OPENLDAP=$(IMAGEM_BASE_OPENLDAP) IMAGEM_BASE_OPENLDAP_VERSAO=$(IMAGEM_BASE_OPENLDAP_VERSAO) IMAGEM_BASE_HAPROXY=$(IMAGEM_BASE_HAPROXY) IMAGEM_BASE_HAPROXY_VERSAO=$(IMAGEM_BASE_HAPROXY_VERSAO) GITUSER_REPO_MODULOS=$(GITUSER_REPO_MODULOS) GITPASS_REPO_MODULOS=$(GITPASS_REPO_MODULOS) build-conteiners
 		@echo ""
 		@echo "Imagens criadas. Vamos verificar se as imagens encontram-se presentes"
 		@for i in $(CONTAINERS_LIST); \
@@ -46,14 +66,14 @@ containers-build:
 				fi; \
 		done
 
-containers-publish:
+containers-publish: verificar-test-envs
 		@echo "Vamos tentar publicar todos os conteineres usando o registry $(DOCKER_REGISTRY) com a tag $(DOCKER_CONTAINER_VERSAO_PRODUTO)"
 		@echo ""
-		@make -C ../containers publish-containers
+		@make -C ../ DOCKER_REGISTRY=$(DOCKER_REGISTRY) DOCKER_CONTAINER_VERSAO_PRODUTO=$(DOCKER_CONTAINER_VERSAO_PRODUTO) publish-containers
 		@echo ""
 		@echo "ok! Imagens publicadas."
 
-containers-download:
+containers-download: verificar-test-envs
 		@echo "Vamos agora tentar fazer o download das imagens de teste"
 		@for i in $(CONTAINERS_LIST); \
 		do \
@@ -73,7 +93,7 @@ containers-download:
 		done
 
 
-test-containers: 
+test-containers: verificar-test-envs
 		@echo "Vamos iniciar a bateria de testes relacionada aos conteineres (erase, build, push e pull)"
 		@echo "***********************************************************************************"
 		@echo "Erase******************************************************************************"

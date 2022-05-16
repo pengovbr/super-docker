@@ -7,15 +7,15 @@ ARG IMAGEM_BASE=supergovbr/base-mariadb10.5:latest
 
 FROM ${IMAGEM_BASE} as builder
 
-ARG DB_COMMITHASH_BASEREF=eb81bfdc4bf1acd5d40369cfdd01adf6aa31a4c2
+ARG GIT_DB_REF=https://github.com/supergovbr/sei-db-ref-executivo/raw/master
 
 ############################# INÍCIO DA INSTALAÇÃO #############################
 ENV MYSQL_ROOT_PASSWORD=P@ssword
 
 COPY assets/my.cnf /etc/mysql/mariadb.conf.d/sei.cnf
 COPY assets/pre-install.sql /docker-entrypoint-initdb.d/1_pre-install.sql
-ADD https://github.com/spbgovbr/sei-db-ref-executivo/raw/${DB_COMMITHASH_BASEREF}/mysql/v4.0.0/sei_4_0_0_BD_Ref_Exec.sql /docker-entrypoint-initdb.d/2_sei_4_0_0_BD_Ref_Exec.sql
-ADD https://github.com/spbgovbr/sei-db-ref-executivo/raw/${DB_COMMITHASH_BASEREF}/mysql/v4.0.0/sip_4_0_0_BD_Ref_Exec.sql /docker-entrypoint-initdb.d/3_sip_4_0_0_BD_Ref_Exec.sql
+ADD ${GIT_DB_REF}/mysql/v4.0.x.1/sei_super_4.0.x.1_BD_Ref_Exec.sql /docker-entrypoint-initdb.d/2_sei_4_0_0_BD_Ref_Exec.sql
+ADD ${GIT_DB_REF}/mysql/v4.0.x.1/sip_super_4.0.x.1_BD_Ref_Exec.sql /docker-entrypoint-initdb.d/3_sip_4_0_0_BD_Ref_Exec.sql
 COPY assets/pos-install.sql /docker-entrypoint-initdb.d/9_pos-install.sql
 
 RUN chmod 644 /etc/mysql/mariadb.conf.d/sei.cnf

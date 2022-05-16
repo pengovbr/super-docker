@@ -9,14 +9,14 @@ ARG IMAGEM_BASE=supergovbr/base-oracle11g:latest
 
 FROM ${IMAGEM_BASE}
 
-ARG DB_COMMITHASH_BASEREF=eb81bfdc4bf1acd5d40369cfdd01adf6aa31a4c2
+ARG GIT_DB_REF=https://github.com/supergovbr/sei-db-ref-executivo/raw/master
 
 ENV TERM xterm \
     ORACLE_ALLOW_REMOTE=true \
     NLS_LANG=PORTUGUESE_BRAZIL.WE8MSWIN1252
 
-ADD https://github.com/spbgovbr/sei-db-ref-executivo/raw/${DB_COMMITHASH_BASEREF}/oracle/v4.0.0/sei_4_0_0_BD_Ref_Exec.dmp \
-    https://github.com/spbgovbr/sei-db-ref-executivo/raw/${DB_COMMITHASH_BASEREF}/oracle/v4.0.0/sip_4_0_0_BD_Ref_Exec.dmp \
+ADD ${GIT_DB_REF}/oracle/v4.0.x.1/sei_super_4.0.x.1_BD_Ref_Exec.dmp \
+    ${GIT_DB_REF}/oracle/v4.0.x.1/sip_super_4.0.x.1_BD_Ref_Exec.dmp \
     assets/pre-install.sql \
     assets/sei-config.sql \
     assets/sip-config.sql \

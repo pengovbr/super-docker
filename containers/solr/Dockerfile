@@ -18,4 +18,4 @@ ADD assets/ \
 RUN ls -lh /tmp && sh /tmp/install.sh && rm -rf /tmp/*
 
 EXPOSE 8983
-CMD ["/entrypoint.sh"]
+CMD ["/command.sh"]
