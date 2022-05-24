@@ -25,11 +25,10 @@ export MENSAGEM_AVISO_FONTES
 
 CMD_CURL_SUPER_LOGIN = curl -s -L $(HOST_URL)/sei | grep "txtUsuario"
 
-help:
-	@echo "Todo: elaborar help dos makefiles e tb README"
+help: ## Mostra essa ajuda
+	@fgrep -h "##" $(MAKEFILE_LIST) | fgrep -v fgrep | sed -e 's/\\$$//' | sed -e 's/##//' | sed -e 's|^\ ||'
 
-
-env.env:
+env.env: ## Target de apoio. Carrega o arquivo env de acordo com a base escolhida
 	@if [ ! -f "env.env" ]; then \
 	cp envs/env-$(base).env env.env; \
 	echo "Arquivo env.env nao existia. Copiado o arquivo default da pasta envs."; \
@@ -38,7 +37,7 @@ env.env:
 	fi
 
 
-check-super-path:
+check-super-path:  ## Target de apoio. Verifica se o codigo do Super existe no local indicado
 	@if [ ! -f $(SUPER_PATH)/sei/web/SEI.php ]; then \
 	echo "$${MENSAGEM_AVISO_FONTES}" ; \
 	echo ""; \
@@ -47,13 +46,14 @@ check-super-path:
 
 
 # acessa o super e verifica se esta respondendo a tela de login
-check-super-isalive:
+check-super-isalive: ## Target de apoio. Verifica se o Super respondeu a tela de login
 	@echo ""
 	@echo "Vamos tentar acessar a pagina de login do SUPER, vamos aguardar por 45 segs."
 	@for number in 1 2 3 4 5 6 7 8 9 ; do \
 	    echo 'Tentando acessar...'; var=$$(echo $$($(CMD_CURL_SUPER_LOGIN))); \
 			if [ "$$var" != "" ]; then \
 					echo 'Pagina respondeu com tela de login' ; \
+					echo 'Acesse com $(HOST_URL)/sei ou $(HOST_URL)/sip' ; \
 					break ; \
 			else \
 			    echo 'Aguardando resposta ...'; \
@@ -61,28 +61,29 @@ check-super-isalive:
 			sleep 5; \
 	done
 
-
+## prerequisites-up: Target de apoio. Encadeia env.env e check-super-path
 prerequisites-up: env.env check-super-path
 
 
-
+## up: Sobe o projeto, mas antes verifica os pre-requisitos
 up: prerequisites-up
 	docker-compose --env-file env.env up -d
 	make check-super-isalive
 
 
-config:
+config: ## sobreescreve o arquivo env.env para uma nova base de dados. Ex: make base=sqlserver config
 	@cp -f envs/env-$(base).env env.env
 	@echo "Ambiente configurado para utilizar a base de dados $(base). (base=[mysql|oracle|sqlserver])"
 
 
-down: 
+down: ## apenas para o projeto com possibilidade de subir novamente mais tarde
 	docker-compose --env-file env.env down
 
 
+## restart: Roda os targets down e up na sequencia
 restart: down up
 
 
-destroy: 
+destroy: ## destroi os componentes e também apaga os volumes de dados
 	docker-compose --env-file env.env down --volumes
 

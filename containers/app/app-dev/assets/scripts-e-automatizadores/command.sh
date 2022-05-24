@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Atribuição dos parâmetros de configuração do SEI
+# Atribuição dos parâmetros de configuração do SUPER
 if [ -f /opt/sei/config/ConfiguracaoSEI.php ] && [ ! -f /opt/sei/config/ConfiguracaoSEI.php~ ]; then
     mv /opt/sei/config/ConfiguracaoSEI.php /opt/sei/config/ConfiguracaoSEI.php~
 fi
@@ -18,7 +18,7 @@ if [ ! -f /opt/sip/config/ConfiguracaoSip.php ]; then
     cp /ConfiguracaoSip.php /opt/sip/config/ConfiguracaoSip.php
 fi
 
-# Ajustes de permissões diversos para desenvolvimento do SEI
+# Ajustes de permissões diversos para desenvolvimento do SUPER
 chmod +x /opt/sei/bin/pdfboxmerge.jar
 mkdir -p /opt/sip/temp
 mkdir -p /opt/sei/temp

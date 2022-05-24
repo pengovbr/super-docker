@@ -14,7 +14,7 @@ yum -y update
 
 yum install -y http://li.nux.ro/download/nux/dextop/el7/x86_64/nux-dextop-release-0-5.el7.nux.noarch.rpm
 
-# Instalação de ferramentas utilitárias e dependências do SEI 4.0
+# Instalação de ferramentas utilitárias e dependências do SUPER
 yum install -y build-essential libmcrypt httpd memcached openssl wget curl unzip gcc java-1.8.0-openjdk \
                libxml2 crontabs mysql netstat net-tools vim git nc libgearman-dev libgearman-devel ffmpeg
 
