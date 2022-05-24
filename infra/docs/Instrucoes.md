@@ -32,7 +32,7 @@ Vai mostrar a ajuda para cada comando make que você pode efetuar.
 Todas as configurações do SEI que irá subir, ficam no arquivo envlocal.env
 
 Inicialmente sugerimos que vc verifique a variável:
-LOCALIZACAO_FONTES_SEI
+LOCALIZACAO_FONTES_SUPER
 leia a orientação que ali aparece e posicione o código fonte no local adequado.
 
 **IMPORTANTE: A recomendação inicial é que você não seja um doido e já saia modificando o arquivo envlocal.env a revelia.**

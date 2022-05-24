@@ -43,7 +43,7 @@ criar_volume_fontes: ## Cria o volume docker com os fontes que serao consumidos 
 ifneq ("$(EXISTE_LOCAL_FONTES)",  "")
 	@echo "Ja existe um volume de Fontes. Voce pode apaga-lo com o comando make apagar_volume_fontes"
 else
-	docker run --rm -v $(LOCALIZACAO_FONTES_SEI):/source -v $(VOLUME_FONTES):/opt -w /source alpine sh -c "cp -R infra sei sip /opt/"
+	docker run --rm -v $(LOCALIZACAO_FONTES_SUPER):/source -v $(VOLUME_FONTES):/opt -w /source alpine sh -c "cp -R infra sei sip /opt/"
 endif
 
 
@@ -285,7 +285,7 @@ ifeq ("$(EXISTE_LOCAL_DB)",  "")
 	@echo "Nao existe volume para o banco, rode antes o comando make criar_volume_banco ou make criar_volumes"
 
 else ifeq ("$(EXISTE_LOCAL_FONTES)",  "")
-	@echo "Nao existe volume para os fontes, rode antes o comando make criar_volume_fontes - Verifique antes a variavel LOCALIZACAO_FONTES_SEI no seu env-local.env"
+	@echo "Nao existe volume para os fontes, rode antes o comando make criar_volume_fontes - Verifique antes a variavel LOCALIZACAO_FONTES_SUPER no seu env-local.env"
 	@echo "A mesma tem que apontar para o diretorio de fontes do SEI (infra, sei, sip)"
 
 else ifeq ("$(EXISTE_LOCAL_ARQUIVOS_EXTERNOS)",  "")

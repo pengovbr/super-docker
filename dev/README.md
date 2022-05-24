@@ -28,11 +28,11 @@ Os comandos abaixo sobem o ambiente em mysql:
 ```
 git clone https://github.com/supergovbr/super-docker
 cd dev
-export SUPER_PATH=~/sei/FontesSEI
+export SUPER_PATH=~/super/FonteSuper
 make up
 ```
 
-o comando ``` export SUPER_PATH=~/sei/FontesSEI ``` deve apontar para o caminho do código fonte do SUPER (pasta onde encontra-se as pastas: sei sip infra)
+o comando ``` export SUPER_PATH=~/super/FonteSuper ``` deve apontar para o caminho do código fonte do SUPER (pasta onde encontra-se as pastas: sei sip infra)
 
 Após a finalização do make up você pode acessar o Super pelo seu browser através do seguinte endereço:
 
