@@ -25,7 +25,7 @@ export MENSAGEM_AVISO_FONTES
 
 CMD_CURL_SUPER_LOGIN = curl -s -L $(HOST_URL)/sei | grep "txtUsuario"
 
-help: ## Mostra essa ajuda
+help: ## Mostra essa ajuda. Voce pode usar tab para completar os comandos
 	@fgrep -h "##" $(MAKEFILE_LIST) | fgrep -v fgrep | sed -e 's/\\$$//' | sed -e 's/##//' | sed -e 's|^\ ||'
 
 env.env: ## Target de apoio. Carrega o arquivo env de acordo com a base escolhida
