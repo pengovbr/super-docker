@@ -30,6 +30,9 @@ Para cada base de dados vamos:
 - subir o projeto;
 - rodar teste funcional simples no selenium;
 - Destruir o ambiente
+
+Verifique antes de rodar se ha algo ja levantado pois o 
+teste vai tentar criar os ambientes do zero
 *****************************************************
 *****************************************************
 

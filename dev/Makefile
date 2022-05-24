@@ -84,6 +84,6 @@ down: ## apenas para o projeto com possibilidade de subir novamente mais tarde
 restart: down up
 
 
-destroy: ## destroi os componentes e também apaga os volumes de dados
+## destroy: destroi os componentes e também apaga os volumes de dados
+destroy: env.env
 	docker-compose --env-file env.env down --volumes
-
