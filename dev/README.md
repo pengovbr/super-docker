@@ -36,10 +36,10 @@ o comando ``` export SUPER_PATH=~/super/FonteSuper ``` deve apontar para o camin
 
 Após a finalização do make up você pode acessar o Super pelo seu browser através do seguinte endereço:
 
-http://localhost:8000/sei
-http://localhost:8000/sip
+- http://localhost:8000/sei
+- http://localhost:8000/sip
 
-Usuário e senha: teste
+  Usuário e senha: teste
 
 
 
