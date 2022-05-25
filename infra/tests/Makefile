@@ -420,6 +420,7 @@ ifeq ("$(BALANCEADOR_PRESENTE)",  "true")
 	@echo "Escalonando para 3 instancias e verificando..."
 	@echo "*****************************************************"
 	@echo "*****************************************************"
+	@$(CMDMAKE) scale && sleep 10
 	@$(CMDMAKE) qtd=3 scale
 	@var=$$(echo $$(docker ps | grep app_1)) \
 	&& \
