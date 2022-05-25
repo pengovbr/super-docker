@@ -7,7 +7,7 @@ O Super-Docker é o projeto disponibilizado para provisionamento de ambientes do
 
 ## Para quem
 
-O projeto atende a qualquer dos profissionais que desejam subir uma instância do Super entre eles:
+O projeto atende a qualquer dos profissionais que desejem subir uma instância do Super entre eles:
 - desenvolvedores
 - arquitetos
 - analistas de testes
@@ -67,6 +67,26 @@ Podemos dividir o projeto em 3 grandes áreas:
 	Mas caso mesmo assim deseje buildar as imagens por conta própria, modificá-las ou usar o seu próprio registry; basta acessar essa pasta. Nela estão as receitas docker usadas, bem como as automatizações (Makefile) para criar seus próprios conteineres em seu próprio Docker Registry.
 
 	Para maiores informações, acesse a pasta containers e leia o Readme respectivo ou [clique aqui](containers/README.md) para abrir diretamente
+
+## Testes
+
+Caso faça alguma alteração no projeto, rode os testes propostos para garantir que pelo menos o básico está funcionando de acordo com o esperado.
+
+Dentro de cada grande área há uma pasta de testes.
+Nessas pastas ficam os testes automatizados para cada área:
+
+- **containers/tests**: existem diversos testes para os conteineres.
+
+	Rode ``` make test-containers ``` para executar uma bateria com todos os subtestes envolvidos. Aqui ele vai criar os conteineres com a tag test e tentará fazer o push bem como outras operações previstas no makefile
+
+- **dev/tests**: aqui ele irá usar os modelos de envfiles fornecidos, subirá o Super para cada um deles e rodará testes de criacao de processo/documento para saber se está ou não funcionando.
+
+	Rode ``` make tests-all-bases ``` para executar a bateria com todos os subtestes envolvidos.
+
+- **infra/tests**: existem diversos testes para a área de infra. Como são muitas possibilidades de customização esse teste é demorado. O automatizador vai subir e destruir o Super diversas vezes variando as formas e possibilidades de customização.
+
+	Rode ``` make test_lineup_completa ``` para executar todos os subtestes envolvidos. Dependendo da necessidade pode executar os subtestes isoladamente, basta digitar ``` make help ``` para uma lista completa das opções disponíveis.
+
 
 
 # Pré-Requisitos

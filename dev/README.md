@@ -96,6 +96,8 @@ Vai subir o Super em todas as bases de dados disponíveis, tentar conectar no me
 
 Devido a natureza da implementação docker, os testes em Selenium vão rodar apenas no linux quando se usa localhost. No MacOs por exemplo os testes não rodam. Portanto ao rodar os testes use o SO Linux.
 
+Mais sobre os testes [clique aqui](../README.md#testes)
+
 
 ## Informações Adicionais para Desenvolvedores
 
