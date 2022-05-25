@@ -57,13 +57,9 @@ Interface de estatísticas do balanceador - Acessível com URLNAME/haproxy (usu�
 ![Balanceador](https://github.com/spbgovbr/sei-docker-binarios/raw/main/docs/images/servicePictures/haproxy.jpg)
 
 ### SUPER: 
-Acesse com URLNAME ou URLNAME/sei
-![SEI:](https://github.com/spbgovbr/sei-docker-binarios/raw/main/docs/images/servicePictures/sei.jpg)
+Acesse com URLNAME ou URLNAME/sei ou URLNAME/sip
+![SUPER:](https://github.com/spbgovbr/sei-docker-binarios/raw/main/docs/images/servicePictures/super1.jpg)
 
-
-### SIP
-Acesse com URLNAME/sip
-![SIP:](https://github.com/spbgovbr/sei-docker-binarios/raw/main/docs/images/servicePictures/sip.jpg) 
 
 ### Memcached Admin
 Interface de administração e acompanhamento do Memcached. Acessível com URLNAME/memcachedadmin
@@ -149,6 +145,3 @@ Caso você queira, pode fazer **pull requests** observando o seguinte:
 Caso desenvolva algo, não esqueça de rodar os testes para saber se não quebrou algo já existente.
 Maiores informações do teste: 
 [tests/README.md](tests/README.md)
-
-## Informações Adicionais
-Caso esteja procurando o projeto antigo para o SEI3 que havia aqui pule para a branch [SEI3x-Docker-Antigo](https://github.com/spbgovbr/sei-docker-antigo)
