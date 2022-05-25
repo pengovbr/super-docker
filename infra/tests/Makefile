@@ -92,17 +92,20 @@ else
 endif
 
 
-help:
-	@echo "Todo: elaborar help dos makefiles e tb README"
+help: ## Mostra essa ajuda. Voce pode usar tab para completar os comandos
+	@fgrep -h "##" $(MAKEFILE_LIST) | fgrep -v fgrep | sed -e 's/\\$$//' | sed -e 's/##//' | sed -e 's|^\ ||'
 
-test_confirmation:
+
+test_confirmation: ## target de apoio mensagem de confirmacao
 ifeq ("$(CONFIRMACAO)",  "n")
 	@( read -p "$$MENSAGEM_CONFIRMACAO" sure && case "$$sure" in [yY]) true;; *) false;; esac )
 else
 	@echo "---"
 endif
-	
-test_lineup_completa: test_confirmation ## Roda todos os testes na sequencia
+
+
+## test_lineup_completa: RODE ESSE TARGET PARA RODAR TODA A STACK DE TESTES PARA A PASTA INFRA
+test_lineup_completa: test_confirmation
 	@echo "*****************************************************"
 	@echo "*****************************************************"
 	@echo "Vamos iniciar uma execucao da montagem do ambiente reduzida com url customizada, nas 3 bases de dados. "
@@ -125,9 +128,10 @@ test_lineup_completa: test_confirmation ## Roda todos os testes na sequencia
 	@echo "Testes Finalizados."
 	@echo "*****************************************************"
 	@echo "*****************************************************"
-	
 
-test_ambientes_default: test_confirmation ## Roda o teste subindo ambiente default em localhost nas 3 bases
+
+## test_ambientes_default: Roda o teste subindo ambiente default em localhost nas 3 bases
+test_ambientes_default: test_confirmation
 	@echo "*****************************************************"
 	@echo "*****************************************************"
 	@echo "Vamos iniciar uma execucao da montagem do ambiente default, nas 3 bases de dados. Aguarde..."
@@ -139,7 +143,9 @@ test_ambientes_default: test_confirmation ## Roda o teste subindo ambiente defau
 	make CONFIRMACAO=y BANCO=sqlserver test_ambiente
 	make CONFIRMACAO=y BANCO=oracle test_ambiente
 
-test_ambientes_reduzida: test_confirmation ## Roda o teste subindo ambiente reduzido com url custom, nas 3 bases de dados
+
+## test_ambientes_reduzida: Roda o teste subindo ambiente reduzido com url custom, nas 3 bases de dados
+test_ambientes_reduzida: test_confirmation
 	@echo "*****************************************************"
 	@echo "*****************************************************"
 	@echo "Vamos iniciar uma execucao da montagem do ambiente reduzida com url customizada, nas 3 bases de dados. Aguarde..."
@@ -151,7 +157,9 @@ test_ambientes_reduzida: test_confirmation ## Roda o teste subindo ambiente redu
 	make MODALIDADE=reduzida CONFIRMACAO=y BANCO=sqlserver test_ambiente
 	make MODALIDADE=reduzida CONFIRMACAO=y BANCO=oracle test_ambiente
 
-test_ambientes_http: test_confirmation ## Roda o teste subindo ambiente com http com url custom, nas 3 bases de dados
+
+## test_ambientes_http: Roda o teste subindo ambiente com http com url custom, nas 3 bases de dados
+test_ambientes_http: test_confirmation
 	@echo "*****************************************************"
 	@echo "*****************************************************"
 	@echo "Vamos iniciar uma execucao da montagem dos ambientes com http no sei ao inves de https. Aguarde..."
@@ -165,7 +173,9 @@ test_ambientes_http: test_confirmation ## Roda o teste subindo ambiente com http
 	
 	make MODALIDADE=default-http CONFIRMACAO=y BANCO=mysql test_ambiente
 
-test_ambientes_full: test_confirmation ## Roda o teste subindo ambiente full com todos os componentes com url custom, nas 3 bases de dados
+
+## test_ambientes_full: Roda o teste subindo ambiente full com todos os componentes com url custom, nas 3 bases de dados
+test_ambientes_full: test_confirmation
 	@echo "*****************************************************"
 	@echo "*****************************************************"
 	@echo "Vamos iniciar uma execucao da montagem do ambiente completa com url customizada, nas 3 bases de dados. Aguarde..."
@@ -177,7 +187,9 @@ test_ambientes_full: test_confirmation ## Roda o teste subindo ambiente full com
 	make MODALIDADE=completa CONFIRMACAO=y BANCO=sqlserver TESTE_SELENIUM_USER_SENHA=123456 test_ambiente
 	make MODALIDADE=completa CONFIRMACAO=y BANCO=oracle TESTE_SELENIUM_USER_SENHA=123456 test_ambiente
 
-test_ambiente: test_confirmation ## Roda o teste em um unico ambiente. Deve ser passado parametro para Base e Modalidade
+
+## test_ambiente: Roda o teste em um unico ambiente. Deve ser passado parametro para Base e Modalidade
+test_ambiente: test_confirmation
 	
 	@echo "" ; echo "" ; echo "";
 	@echo "*****************************************************"
@@ -238,7 +250,8 @@ endif
 	@echo "*****************************************************"
 
 
-test_verificar_componente_presenca: 
+
+test_verificar_componente_presenca: ## target de apoio verifica componente presente via parametro
 	@echo "Vamos verificar se criou com ou sem o $(COMPONENTE_PRESENCA)"
 	@echo "*****************************************************"
 	@echo "*****************************************************"
@@ -255,30 +268,37 @@ test_verificar_componente_presenca:
 	@echo "*****************************************************"
 	@echo "*****************************************************"	
 
-test_verficar_componentes: test_verificar_jod_presenca test_verificar_balanceador_presenca test_verificar_dbadmin_presenca test_verificar_memcachedadmin_presenca test_verificar_mailcatcher_presenca test_verificar_openldap_presenca ## Verifica se os componentes JOD, balanceador, dbadmin, memcachedadmin, mailcatcher e openldap devem ou nao estar presentes
 
-test_verificar_jod_presenca:
+## test_verficar_componentes: target de apoio Verifica se os componentes JOD, balanceador, dbadmin, memcachedadmin, mailcatcher e openldap devem ou nao estar presentes
+test_verficar_componentes: test_verificar_jod_presenca test_verificar_balanceador_presenca test_verificar_dbadmin_presenca test_verificar_memcachedadmin_presenca test_verificar_mailcatcher_presenca test_verificar_openldap_presenca
+
+
+test_verificar_jod_presenca: ## target de apoio verifica se o jod esta presente
 	make test_verificar_componente_presenca
+
 	
-test_verificar_balanceador_presenca:
+test_verificar_balanceador_presenca: ## target de apoio verificar se o balanceador esta presente
 	make COMPONENTE_PRESENCA=balanceador COMPONENTE_PRESENCA_VAR=BALANCEADOR_PRESENTE test_verificar_componente_presenca
+
 	
-test_verificar_dbadmin_presenca:
+test_verificar_dbadmin_presenca: ## target de apoio verifica se o dbadmin esta presente
 	make COMPONENTE_PRESENCA=dbadmin COMPONENTE_PRESENCA_VAR=DBADMIN_PRESENTE test_verificar_componente_presenca
 
-test_verificar_memcachedadmin_presenca:
+
+test_verificar_memcachedadmin_presenca: ## target de apoio verifica se o memcached esta presente
 	make COMPONENTE_PRESENCA=memcachedadmin COMPONENTE_PRESENCA_VAR=MEMCACHEDADMIN_PRESENTE test_verificar_componente_presenca
 
-test_verificar_mailcatcher_presenca:
+
+test_verificar_mailcatcher_presenca: ## target de apoio verifica se o mailcatcher esta presente
 	make COMPONENTE_PRESENCA=mailcatcher COMPONENTE_PRESENCA_VAR=MAIL_CATCHER_PRESENTE test_verificar_componente_presenca
 
-test_verificar_openldap_presenca:
+
+test_verificar_openldap_presenca: ## target de apoio verifica se o openldap esta presente
 	make COMPONENTE_PRESENCA=openldap COMPONENTE_PRESENCA_VAR=OPENLDAP_PRESENTE test_verificar_componente_presenca
 
 
-	
 
-test_verificar_app_url: ## verifica se a url do sei responde a pagina de login
+test_verificar_app_url: ## target de apoio verifica se a url do sei responde a pagina de login
 	
 	@echo "Vamos verificar se o SEI responde a pagina inicial"
 	@echo "*****************************************************"
@@ -312,7 +332,7 @@ test_verificar_app_url: ## verifica se a url do sei responde a pagina de login
 	@echo "*****************************************************"
 
 
-test_verificar_balanceador_urls: ## verifica se as urls fornecidas no balanceador estao ativas e funcionando
+test_verificar_balanceador_urls: ## target de apoio verifica se as urls fornecidas no balanceador estao ativas e funcionando
 	@echo "Caso haja um balanceador vamos averiguar os seus backends..."
 	
 ifeq ("$(BALANCEADOR_PRESENTE)",  "true")
@@ -350,7 +370,7 @@ else
 endif
 
 
-test_escalonar: ## escalona o app para 2 para 1 depois para 3 e volta para 1
+test_escalonar: ## target de apoio escalona o app para 2 para 1 depois para 3 e volta para 1
 ifeq ("$(BALANCEADOR_PRESENTE)",  "true")
 	@echo "Vamos escalonar a aplicacao para verificar o comportamento"
 	@echo "*****************************************************"
@@ -457,7 +477,7 @@ else
 	
 endif	
 
-test_selenium_basico1: ## roda um teste em selenium apontando para a instancia escolhida para criar processo com anexos
+test_selenium_basico1: ## target de apoio roda um teste em selenium apontando para a instancia escolhida para criar processo com anexos
 	
 	@echo "*****************************************************"
 	@echo "*****************************************************"
@@ -536,7 +556,9 @@ endif
 	if [ "$$var" != "" ]; then echo 'Deu erro no teste Selenium, verifique. Parando o restante dos testes...'; exit 1; fi;
 endif
 
-test_verificar_volumes_existe: ## Verifica volumes existentes
+
+
+test_verificar_volumes_existe: ## target de apoio Verifica volumes existentes
 	@echo "Vamos verificar se os volumes existem"
 	@echo "*****************************************************"
 	@echo "*****************************************************"
@@ -559,8 +581,9 @@ test_verificar_volumes_existe: ## Verifica volumes existentes
 	@echo "Verificacao de volumes realizada com sucesso"
 	@echo "*****************************************************"
 	@echo "*****************************************************"
-	
-test_verificar_volumes_nao_existe: ## Verifica se os volumes nao existem indicando a delecao
+
+
+test_verificar_volumes_nao_existe: ## target de apoio Verifica se os volumes nao existem indicando a delecao
 	@echo "Vamos verificar se os volumes nao existem"
 	@echo "*****************************************************"
 	@echo "*****************************************************"

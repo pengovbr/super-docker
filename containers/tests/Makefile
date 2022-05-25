@@ -7,31 +7,37 @@ endif
 
 CONTAINERS_LIST=base-centos7 memcached jod mailcatcher base-mariadb10.5 mariadb10.5 base-sqlserver2017 sqlserver2017 base-oracle11g oracle11g solr8.2.0 base-app app-dev app-ci
 
-getenv-test:
+help: ## Mostra essa ajuda. Voce pode usar tab para completar os comandos
+	@fgrep -h "##" $(MAKEFILE_LIST) | fgrep -v fgrep | sed -e 's/\\$$//' | sed -e 's/##//' | sed -e 's|^\ ||'
+
+
+getenv-test: ## target de apoio para copiar o envcontainers-teste.env a partir do modelo
 		@cp -f envcontainers-test.env.modelo envcontainers-test.env
 		@echo "Arquivo envcontainers-test.env criado com valores default.";
 		@echo "Abra o arquivo e faca as alteracoes."; 
 
-envcontainers-test.env:
+
+envcontainers-test.env: ## target de apoio para verificar se existe o arquivo envcontainers-test.env
 		@echo "Arquivo env nao encontrado para os testes nas operacoes de containeres."
 		@echo "Ha um arquivo modelo (envcontainers-test.env.modelo) que vc pode usar para preencher com suas informacoes."
 		@echo "Basta rodar make getenv-test"
 		@echo "Em seguida, altere nesse arquivo as informacoes para os testes no seu ambiente"
 		exit 1
 
-verificar-arquivo-env-containers:
+
+verificar-arquivo-env-containers: ## target de apoio para verificar se existe um arquivo no diretorio containers e parar a execucao
 		@if test -f ../envcontainers.env; then \
 		    echo "Um arquivo envcontainers.env foi encontrado em ../"; \
 				echo "Apague esse arquivo antes de prosseguir, pois o teste usa o seu env proprio (envcontainers-test.env)"; \
 				exit 1; \
 		fi
 
+
+## verificar-test-envs: target de apoio que roda na sequencia envcontainers-test.env verificar-arquivo-env-containers
 verificar-test-envs: envcontainers-test.env verificar-arquivo-env-containers
 
-teste: envcontainers-test.env
-		make erase-conteiners-local
 
-
+## containers-erase: target de apoio apaga todos os conteineres
 containers-erase: verificar-test-envs
 		@echo "Vamos tentar apagar todos os conteineres locais com o registry $(DOCKER_REGISTRY) com a tag $(DOCKER_CONTAINER_VERSAO_PRODUTO)"
 		@echo ""
@@ -49,6 +55,7 @@ containers-erase: verificar-test-envs
 				fi; \
 		done
 
+## containers-build: target de apoio constroi todos os conteineres usando a tag test
 containers-build: verificar-test-envs
 		@echo "Vamos tentar buildar todos os conteineres usando o registry $(DOCKER_REGISTRY) com a tag $(DOCKER_CONTAINER_VERSAO_PRODUTO)"
 		@echo ""
@@ -66,6 +73,8 @@ containers-build: verificar-test-envs
 				fi; \
 		done
 
+
+## containers-publish: target de apoio publica todos os conteineres usando a tag test
 containers-publish: verificar-test-envs
 		@echo "Vamos tentar publicar todos os conteineres usando o registry $(DOCKER_REGISTRY) com a tag $(DOCKER_CONTAINER_VERSAO_PRODUTO)"
 		@echo ""
@@ -73,6 +82,9 @@ containers-publish: verificar-test-envs
 		@echo ""
 		@echo "ok! Imagens publicadas."
 
+
+
+## containers-download: target de apoio faz o pull em todos os conteineres
 containers-download: verificar-test-envs
 		@echo "Vamos agora tentar fazer o download das imagens de teste"
 		@for i in $(CONTAINERS_LIST); \
@@ -93,6 +105,7 @@ containers-download: verificar-test-envs
 		done
 
 
+## test-containers: RODE ESSE TARGET PARA TESTAR TODA A STACK DE CRIACAO PUBLICACAO DOWNLOAD E ERASE
 test-containers: verificar-test-envs
 		@echo "Vamos iniciar a bateria de testes relacionada aos conteineres (erase, build, push e pull)"
 		@echo "***********************************************************************************"

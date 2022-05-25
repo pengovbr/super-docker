@@ -39,17 +39,19 @@ teste vai tentar criar os ambientes do zero
 endef
 export MENSAGEM_TESTE_ALL
 
-help:
-		@echo "Todo: elaborar help dos makefiles e tb README"
 
-apagar_env:
+help: ## Mostra essa ajuda. Voce pode usar tab para completar os comandos
+		@fgrep -h "##" $(MAKEFILE_LIST) | fgrep -v fgrep | sed -e 's/\\$$//' | sed -e 's/##//' | sed -e 's|^\ ||'
+
+
+apagar_env: ## target de apoio para apagar arquivo env na origem
 		@echo "Apagando arquivo env na origem"
 		@if test -f ../env.env; then rm -rf env.env; fi;
 		@echo "Copiando arquivo env $(BASE)"
 		@cp ../envs/env-$(BASE).env ../
 
 
-test_selenium_basico1: ## roda um teste em selenium apontando para a instancia escolhida para criar processo com anexos
+test_selenium_basico1: ## target de apoio roda um teste em selenium apontando para a instancia escolhida para criar processo com anexos
 	
 		@echo "$$MENSAGEM_TESTE_SELENIUM"
 
@@ -102,7 +104,7 @@ endif
 		if [ "$$var" != "" ]; then echo 'Deu erro no teste Selenium, verifique. Parando o restante dos testes...'; exit 1; fi;
 
 
-tests-base:
+tests-base: ## target de apoio roda o teste em determinada base de dados via parametro
 		@echo "*****************************************************"
 		@echo "Base de dados dessa execucao: $(BASE)"
 		@echo "*****************************************************"
@@ -115,7 +117,8 @@ tests-base:
 		@echo "Finalizado testes em ambiente na base: $(BASE)"
 		@echo "*****************************************************"
 
-tests-all-bases:
+
+tests-all-bases: ## RODE ESSE TARGET PARA TESTAR TODA A STACK DO DEV
 		@echo "$$MENSAGEM_TESTE_ALL"
 		@echo ""
 		make BASE=mysql tests-base
