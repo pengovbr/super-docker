@@ -180,7 +180,7 @@ spec:
             name: sei-app
             optional: false
         - secretRef:
-            name: sei-secret1
+            name: super-secret1
             optional: false
         image: ${DOCKER_IMAGE_APP}
         imagePullPolicy: Always
