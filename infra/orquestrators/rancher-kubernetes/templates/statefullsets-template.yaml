@@ -1,3 +1,6 @@
+# para facilitar o deploy em dev, vamos criar aqui o solr e o banco como deployments, em eventual prod crie-os
+# como statefulsets
+
 apiVersion: v1
 kind: Service
 metadata:
@@ -19,18 +22,18 @@ spec:
 
 
 apiVersion: apps/v1
-kind: StatefulSet
+kind: Deployment
 metadata:
   name: db
   namespace: ${KUBERNETES_NAMESPACE}
 spec:
-  podManagementPolicy: OrderedReady
   replicas: 1
   revisionHistoryLimit: 10
   selector:
     matchLabels:
       servico: db
-  serviceName: db
+  strategy:
+    type: Recreate
   template:
     metadata:
       labels:
@@ -90,10 +93,6 @@ spec:
       - name: vol1
         persistentVolumeClaim:
           claimName: vol-sei-db
-  updateStrategy:
-    rollingUpdate:
-      partition: 0
-    type: RollingUpdate
 
 
 ---
@@ -119,18 +118,18 @@ spec:
 ---
 
 apiVersion: apps/v1
-kind: StatefulSet
+kind: Deployment
 metadata:
   name: solr
   namespace: ${KUBERNETES_NAMESPACE}
 spec:
-  podManagementPolicy: OrderedReady
   replicas: 1
   revisionHistoryLimit: 10
   selector:
     matchLabels:
       servico: solr
-  serviceName: solr
+  strategy:
+    type: Recreate
   template:
     metadata:
       labels:
@@ -210,8 +209,4 @@ spec:
       - name: vol1
         persistentVolumeClaim:
           claimName: vol-sei-solr
-  updateStrategy:
-    rollingUpdate:
-      partition: 0
-    type: RollingUpdate
 

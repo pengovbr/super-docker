@@ -16,5 +16,6 @@ export APP_MAIL_SENHA_BASE64=$(echo -n "$APP_MAIL_SENHA" | base64)
 export APP_MAIL_USUARIO_BASE64=$(echo -n "$APP_MAIL_USUARIO" | base64)
 export APP_SEI_CHAVE_ACESSO_BASE64=$(echo -n "$APP_SEI_CHAVE_ACESSO" | base64)
 export APP_SIP_CHAVE_ACESSO_BASE64=$(echo -n "$APP_SIP_CHAVE_ACESSO" | base64)
+export APP_FONTES_GIT_PRIVKEY_BASE64=$(echo -n "$APP_FONTES_GIT_PRIVKEY_BASE64" | base64)
 
 envsubst < orquestrators/rancher-kubernetes/templates/secrets-template.yaml > orquestrators/rancher-kubernetes/topublish/secrets.yaml

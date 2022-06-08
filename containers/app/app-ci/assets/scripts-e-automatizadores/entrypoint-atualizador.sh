@@ -59,7 +59,33 @@ echo "**INICIANDO CONFIGURACOES BASICAS DO APACHE E SEI**"
 echo "***************************************************"
 echo "***************************************************"
 
-sleep 5
+if [ -z "$APP_FONTES_GIT_PATH" ] || \
+   [ -z "$APP_FONTES_GIT_PRIVKEY_BASE64" ] || \
+   [ -z "$APP_FONTES_GIT_CHECKOUT" ]; then
+    echo "Vamos tentar usar o codigo fonte fornecido na pasta /opt (via volume)."
+else
+    echo "Vamos tentar baixar o fonte do git com os parametros fornecidos"
+
+    cd /tmp
+    echo -n "$APP_FONTES_GIT_PRIVKEY_BASE64" | base64 -d > /tmp/lhave.key
+    chmod 500 lhave.key
+
+    echo '#!/bin/bash' > /tmp/gitwrap.sh
+    echo 'ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i /tmp/lhave.key "$@"' >> /tmp/gitwrap.sh
+    chmod +x gitwrap.sh
+
+    echo "Fazendo o clone dos fontes. Aguarde..."
+    export GIT_SSH=/tmp/gitwrap.sh
+    git clone $APP_FONTES_GIT_PATH
+    export GIT_SSH=ssh
+
+    echo "Fazendo a copia dos fontes. Aguarde..."
+    cd super
+    git checkout $APP_FONTES_GIT_CHECKOUT
+    cp -R src/* /opt/
+    cd /
+    rm -rf /tmp/super /tmp/lhave.key
+fi
 
 APP_HOST_URL=$APP_PROTOCOLO://$APP_HOST
 
@@ -450,8 +476,8 @@ if [ "$MODULO_ESTATISTICAS_INSTALAR" == "true" ]; then
 
         if [ -z "$MODULO_ESTATISTICAS_VERSAO" ] || \
            [ -z "$MODULO_ESTATISTICAS_URL" ] || \
-	       [ -z "$MODULO_ESTATISTICAS_SIGLA" ] || \
-	       [ -z "$MODULO_ESTATISTICAS_CHAVE" ]; then
+	         [ -z "$MODULO_ESTATISTICAS_SIGLA" ] || \
+	         [ -z "$MODULO_ESTATISTICAS_CHAVE" ]; then
             echo "Informe as seguinte variaveis de ambiente no container:"
             echo "MODULO_ESTATISTICAS_VERSAO, MODULO_ESTATISTICAS_URL, MODULO_ESTATISTICAS_SIGLA, MODULO_ESTATISTICAS_CHAVE"
 

@@ -19,9 +19,27 @@ LOGS_SEGUIR=true
 
 DIR := ${CURDIR}
 COMMMADCOMPOSE = docker-compose -f orquestrators/docker-compose/docker-compose.yml 
+CMD_CURL_SUPER_LOGIN = curl -s -L -k $(APP_PROTOCOLO)://$(APP_HOST)/sei | grep "txtUsuario"
 
 help:   ## Lista de comandos disponiveis e descricao. Voce pode usar TAB para completar os comandos
 	@fgrep -h "##" $(MAKEFILE_LIST) | fgrep -v fgrep | sed -e 's/\\$$//' | sed -e 's/##//'
+
+
+check-super-isalive: ## Target de apoio. Acessa o Super e verifica se esta respondendo a tela de login
+	@echo "$(APP_HOST)"
+	@echo "Vamos tentar acessar a pagina de login do SUPER, vamos aguardar ate 95 segs."
+	@for number in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20; do \
+	    echo 'Tentando acessar...'; var=$$(echo $$($(CMD_CURL_SUPER_LOGIN))); \
+			if [ "$$var" != "" ]; then \
+					echo 'Pagina respondeu com tela de login' ; \
+					break ; \
+			else \
+			    echo 'Aguardando resposta ...'; \
+			fi; \
+			sleep 5; \
+	done; \
+	var=$$(echo $$($(CMD_CURL_SUPER_LOGIN))); \
+	if [ "$$var" == "" ]; then echo 'Pagina de login nao respondeu. Verifique. Abandonando execucao'; exit 1 ; fi;
 
 
 test_ambiente_localhost_mysql:
@@ -417,4 +435,28 @@ kubernetes_montar_yaml:
 	@echo "Comece publicando o configmap e o secret, depois os pvcs e em seguida os demais componentes"
 	@echo "Como o codigo fonte do SEI nao eh publico faz-se necessario mover manualmente os fontes para o pvc vol-sei-fontes"
 
-	
+
+kubernetes_apply:
+	cd orquestrators/rancher-kubernetes/topublish/; \
+	kubectl --insecure-skip-tls-verify apply -f configmaps.yaml; \
+	kubectl --insecure-skip-tls-verify apply -f secrets.yaml; \
+	kubectl --insecure-skip-tls-verify apply -f pvc.yaml; \
+	kubectl --insecure-skip-tls-verify apply -f jobs.yaml; \
+	kubectl --insecure-skip-tls-verify apply -f statefullsets.yaml; \
+	kubectl --insecure-skip-tls-verify apply -f deploys-svc.yaml; \
+	kubectl --insecure-skip-tls-verify apply -f ingress.yaml;
+
+
+kubernetes_delete:
+	cd orquestrators/rancher-kubernetes/topublish/; \
+	kubectl --insecure-skip-tls-verify  delete -f ingress.yaml --wait=true --cascade='foreground'; \
+	kubectl --insecure-skip-tls-verify  delete -f deploys-svc.yaml --wait=true --cascade='foreground'; \
+	kubectl --insecure-skip-tls-verify  delete -f statefullsets.yaml --wait=true --cascade='foreground'; \
+	kubectl --insecure-skip-tls-verify  delete -f jobs.yaml --wait=true --cascade='foreground'; \
+	kubectl --insecure-skip-tls-verify  delete -f configmaps.yaml --wait=true --cascade='foreground'; \
+	kubectl --insecure-skip-tls-verify  delete -f secrets.yaml --wait=true --cascade='foreground'; \
+	kubectl --insecure-skip-tls-verify  delete -f pvc.yaml --wait=true --cascade='foreground';
+
+
+kubernetes_check_deploy_generic:
+	kubectl --insecure-skip-tls-verify wait deployment $(KUBE_DEPLOY_NAME) --for condition="Available=True" --namespace=$$KUBERNETES_NAMESPACE --timeout=90s
