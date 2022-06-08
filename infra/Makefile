@@ -26,7 +26,6 @@ help:   ## Lista de comandos disponiveis e descricao. Voce pode usar TAB para co
 
 
 check-super-isalive: ## Target de apoio. Acessa o Super e verifica se esta respondendo a tela de login
-	@echo "$(APP_HOST)"
 	@echo "Vamos tentar acessar a pagina de login do SUPER, vamos aguardar ate 95 segs."
 	@for number in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20; do \
 	    echo 'Tentando acessar...'; var=$$(echo $$($(CMD_CURL_SUPER_LOGIN))); \
@@ -410,7 +409,7 @@ apagar_volume_controlador_instalacao: ## Apagar volume controlador da instalacao
 	docker volume rm $(VOLUME_CONTROLADOR_INSTALACAO) || true
 
 
-kubernetes_montar_yaml:
+kubernetes_montar_yaml: ## Montar receitas para kubernetes - apenas mysql
 	@echo "Vamos montar os arquivos yaml para o kubernetes. Apenas mysql e somente componentes essenciais..."
 	@rm -rf orquestrators/rancher-kubernetes/topublish/configmaps.yaml \
 	orquestrators/rancher-kubernetes/topublish/deploys-svc.yaml \
@@ -436,7 +435,7 @@ kubernetes_montar_yaml:
 	@echo "Como o codigo fonte do SEI nao eh publico faz-se necessario mover manualmente os fontes para o pvc vol-sei-fontes"
 
 
-kubernetes_apply:
+kubernetes_apply: ## Aplicar receitas no cluster kubernetes
 	cd orquestrators/rancher-kubernetes/topublish/; \
 	kubectl --insecure-skip-tls-verify apply -f configmaps.yaml; \
 	kubectl --insecure-skip-tls-verify apply -f secrets.yaml; \
@@ -447,7 +446,7 @@ kubernetes_apply:
 	kubectl --insecure-skip-tls-verify apply -f ingress.yaml;
 
 
-kubernetes_delete:
+kubernetes_delete: ## deletar receitas do cluster
 	cd orquestrators/rancher-kubernetes/topublish/; \
 	kubectl --insecure-skip-tls-verify  delete -f ingress.yaml --wait=true --cascade='foreground'; \
 	kubectl --insecure-skip-tls-verify  delete -f deploys-svc.yaml --wait=true --cascade='foreground'; \
@@ -458,5 +457,5 @@ kubernetes_delete:
 	kubectl --insecure-skip-tls-verify  delete -f pvc.yaml --wait=true --cascade='foreground';
 
 
-kubernetes_check_deploy_generic:
-	kubectl --insecure-skip-tls-verify wait deployment $(KUBE_DEPLOY_NAME) --for condition="Available=True" --namespace=$$KUBERNETES_NAMESPACE --timeout=90s
+kubernetes_check_deploy_generic: ## verifica se determinado deploy ja esta pronto para uso no cluster
+	kubectl --insecure-skip-tls-verify wait deployment $(KUBE_DEPLOY_NAME) --for condition="Available=True" --namespace=$$KUBERNETES_NAMESPACE --timeout=180s
