@@ -35,6 +35,7 @@ mkdir -p /etc/cron.d/sei
 cp /tmp/assets/conf/info.php /var/www/html/
 cp /tmp/assets/conf/sei.ini /etc/php.d/
 cp /tmp/assets/conf/sei.conf /etc/httpd/conf.d/
+cp /tmp/assets/conf/deflate.conf /etc/httpd/conf.d/
 cp /tmp/assets/conf/cron.conf /etc/cron.d/
 cp /tmp/assets/conf/xdebug.ini /etc/php.d/
 
