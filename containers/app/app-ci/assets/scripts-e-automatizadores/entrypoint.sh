@@ -59,6 +59,12 @@ echo "**INICIANDO CONFIGURACOES BASICAS DO APACHE E SEI**"
 echo "***************************************************"
 echo "***************************************************"
 
+while [ ! -f /sei/controlador-instalacoes/instalado.ok ]
+do
+    echo "Aguardando conteiner atualizador instalar e atualizar o SEI e modulos"
+    sleep 5
+done
+
 APP_HOST_URL=$APP_PROTOCOLO://$APP_HOST
 
 echo "127.0.0.1 $APP_HOST" >> /etc/hosts
@@ -477,12 +483,13 @@ if [ "$MODULO_GESTAODOCUMENTAL_INSTALAR" == "true" ]; then
 
               yes | cp -Rf sei sip /opt/
 
-              cd /opt/sei/
-              sed -i "s#/\*novomodulo\*/#'MdGestaoDocumentalIntegracao' => 'gestao-documental', /\*novomodulo\*/#g" config/ConfiguracaoSEI.php
 
               rm -rf /opt/sei/web/modulos/mod-gestao-documental.old
 
             fi
+
+            cd /opt/sei/
+            sed -i "s#/\*novomodulo\*/#'MdGestaoDocumentalIntegracao' => 'gestao-documental', /\*novomodulo\*/#g" config/ConfiguracaoSEI.php
 
         fi
 
