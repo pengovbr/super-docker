@@ -93,17 +93,8 @@ if [ ! -f /opt/sip/config/ConfiguracaoSip.php ]; then
     \cp -r /sei/files/conf/ConfiguracaoSip.php /opt/sip/config/
 fi
 
-DIFERENCA=$(diff /sei/files/conf/ConfiguracaoSEI.php /opt/sei/config/ConfiguracaoSEI.php | wc -l)
-if [ ! "$DIFERENCA" == "0" ]; then
-    mv /opt/sei/config/ConfiguracaoSEI.php /opt/sei/config/ConfiguracaoSEI.php.$(date '+%Y-%m-%d_%H-%M-%S')
-    \cp -r /sei/files/conf/ConfiguracaoSEI.php /opt/sei/config/
-fi
-
-DIFERENCA=$(diff /sei/files/conf/ConfiguracaoSip.php /opt/sip/config/ConfiguracaoSip.php | wc -l)
-if [ ! "$DIFERENCA" == "0" ]; then
-    mv /opt/sip/config/ConfiguracaoSip.php /opt/sip/config/ConfiguracaoSip.php.$(date '+%Y-%m-%d_%H-%M-%S')
-    \cp -r /sei/files/conf/ConfiguracaoSip.php /opt/sip/config/
-fi
+cp -f /opt/sei/config/ConfiguracaoSEI.php /opt/sei/config/ConfiguracaoSEI.php.$(date '+%Y-%m-%d_%H-%M-%S')
+cp -f /opt/sip/config/ConfiguracaoSip.php /opt/sip/config/ConfiguracaoSip.php.$(date '+%Y-%m-%d_%H-%M-%S')
 
 
 # Ajustes de permissoes diversos para desenvolvimento do SEI
@@ -267,9 +258,9 @@ echo "***************************************************"
 echo "***************************************************"
 
 if [ "$MODULO_ESTATISTICAS_INSTALAR" == "true" ]; then
-    
+
     if [ -f /sei/controlador-instalacoes/instalado-modulo-estatisticas.ok ]; then
-    
+
         if [ -z "$MODULO_ESTATISTICAS_VERSAO" ] || \
            [ -z "$MODULO_ESTATISTICAS_URL" ] || \
 	       [ -z "$MODULO_ESTATISTICAS_SIGLA" ] || \
@@ -278,91 +269,87 @@ if [ "$MODULO_ESTATISTICAS_INSTALAR" == "true" ]; then
             echo "MODULO_ESTATISTICAS_VERSAO, MODULO_ESTATISTICAS_URL, MODULO_ESTATISTICAS_SIGLA, MODULO_ESTATISTICAS_CHAVE"
 
         else
-            
+
             echo "Verificando existencia do modulo de estatisticas"
             if [ -d "/opt/sei/web/modulos/mod-sei-estatisticas" ]; then
                 echo "Ja existe um diretorio para o modulo de estatisticas. Vamos assumir que o codigo la esteja integro"
-        
+
             else
                 echo "Copiando o modulo de estatisticas"
                 cp -Rf /sei-modulos/mod-sei-estatisticas /opt/sei/web/modulos/
             fi
-        
 
             cd /opt/sei/web/modulos/mod-sei-estatisticas
             git checkout $MODULO_ESTATISTICAS_VERSAO
             echo "Versao do Governanca eh agora: $MODULO_ESTATISTICAS_VERSAO"
 
             cd /opt/sei/
-        
+
             sed -i "s#/\*novomodulo\*/#'MdEstatisticas' => 'mod-sei-estatisticas', /\*novomodulo\*/#g" config/ConfiguracaoSEI.php
             sed -i "s#/\*extramodulesconfig\*/#'MdEstatisticas' => array('url' => '$MODULO_ESTATISTICAS_URL','sigla' => '$MODULO_ESTATISTICAS_SIGLA','chave' => '$MODULO_ESTATISTICAS_CHAVE'), /\*extramodulesconfig\*/#g" config/ConfiguracaoSEI.php
-        
-            
+
         fi
-        
+
     else
-    
+
         echo "Arquivo de controle do Modulo de Estatisticas encontrado, provavelmente ja foi instalado, pulando configuracao do modulo"
-    
+
     fi
 
 else
-    
+
     echo "Variavel MODULO_ESTATISTICAS_INSTALAR nao setada para true, pulando configuracao..."
-    
+
 fi
 
 
 echo "***************************************************"
 echo "***************************************************"
-echo "**CONFIGURANDO MODULO WSSEI************************"
+echo "**CONFIGURANDO MODULO WSSUPER************************"
 echo "***************************************************"
 echo "***************************************************"
-if [ "$MODULO_WSSEI_INSTALAR" == "true" ]; then
-    
-    if [ -f /sei/controlador-instalacoes/instalado-modulo-wssei.ok ]; then
-        
-        if [ -z "$MODULO_WSSEI_VERSAO" ] || \
-           [ -z "$MODULO_WSSEI_URL_NOTIFICACAO" ] || \
-	       [ -z "$MODULO_WSSEI_ID_APP" ] || \
-	       [ -z "$MODULO_WSSEI_CHAVE" ]; then
+if [ "$MODULO_WSSUPER_INSTALAR" == "true" ]; then
+
+    if [ -f /sei/controlador-instalacoes/instalado-modulo-wssuper.ok ]; then
+
+        if [ -z "$MODULO_WSSUPER_VERSAO" ] || \
+           [ -z "$MODULO_WSSUPER_URL_NOTIFICACAO" ] || \
+	       [ -z "$MODULO_WSSUPER_ID_APP" ] || \
+	       [ -z "$MODULO_WSSUPER_CHAVE" ]; then
             echo "Informe as seguinte variaveis de ambiente no container:"
-            echo "MODULO_WSSEI_VERSAO, MODULO_WSSEI_URL_NOTIFICACAO, MODULO_WSSEI_ID_APP, MODULO_WSSEI_CHAVE"
+            echo "MODULO_WSSUPER_VERSAO, MODULO_WSSUPER_URL_NOTIFICACAO, MODULO_WSSUPER_ID_APP, MODULO_WSSUPER_CHAVE"
 
         else
-            
-            echo "Verificando existencia do modulo wssei"
+
+            echo "Verificando existencia do modulo wssuper"
             if [ -d "/opt/sei/web/modulos/mod-wssei" ]; then
                 echo "Ja existe um diretorio para o modulo wssei. Vamos assumir que o codigo la esteja integro"
-        
+
             else
-                echo "Copiando o modulo wssei"
+                echo "Copiando o modulo wssuper"
                 cp -Rf /sei-modulos/mod-wssei /opt/sei/web/modulos/
             fi
-        
 
             cd /opt/sei/web/modulos/mod-wssei
-            git checkout $MODULO_WSSEI_VERSAO
-            echo "Versao do WSSEI eh agora: $MODULO_WSSEI_VERSAO"
+            git checkout $MODULO_WSSUPER_VERSAO
+            echo "Versao do WSSUPER eh agora: $MODULO_WSSUPER_VERSAO"
 
             cd /opt/sei/
             sed -i "s#/\*novomodulo\*/#'MdWsSeiRest' => 'mod-wssei/', /\*novomodulo\*/#g" config/ConfiguracaoSEI.php
-            sed -i "s#/\*extramodulesconfig\*/#'WSSEI' => array('UrlServicoNotificacao' => '$MODULO_WSSEI_URL_NOTIFICACAO', 'IdApp' => '$MODULO_WSSEI_ID_APP', 'ChaveAutorizacao' => '$MODULO_WSSEI_CHAVE', 'TokenSecret' => '504CE1E9-8913-488F-AB3E-EDDABC065B0B'  ), /\*extramodulesconfig\*/#g" config/ConfiguracaoSEI.php
+            sed -i "s#/\*extramodulesconfig\*/#'WSSEI' => array('UrlServicoNotificacao' => '$MODULO_WSSUPER_URL_NOTIFICACAO', 'IdApp' => '$MODULO_WSSUPER_ID_APP', 'ChaveAutorizacao' => '$MODULO_WSSUPER_CHAVE', 'TokenSecret' => '504CE1E9-8913-488F-AB3E-EDDABC065B0B'  ), /\*extramodulesconfig\*/#g" config/ConfiguracaoSEI.php
 
-            
         fi
-        
+
     else
-    
-        echo "Arquivo de controle do Modulo WSSEI encontrado pulando configuracao do modulo"
-    
+
+        echo "Arquivo de controle do Modulo WSSUPER encontrado pulando configuracao do modulo"
+
     fi
 
 else
-    
-    echo "Variavel MODULO_WSSEI_INSTALAR nao setada para true, pulando configuracao..."
-    
+
+    echo "Variavel MODULO_WSSUPER_INSTALAR nao setada para true, pulando configuracao..."
+
 fi
 
 echo "***************************************************"
@@ -372,7 +359,7 @@ echo "***************************************************"
 echo "***************************************************"
 if [ "$MODULO_RESPOSTA_INSTALAR" == "true" ]; then
 
-    if [ -f /sei/controlador-instalacoes/instalado-modulo-resposta.ok ]; then
+    if [ ! -f /sei/controlador-instalacoes/instalado-modulo-resposta.ok ]; then
 
         if [ -z "$MODULO_RESPOSTA_VERSAO" ]; then
             echo "Informe as seguinte variaveis de ambiente no container:"
@@ -385,40 +372,39 @@ if [ "$MODULO_RESPOSTA_INSTALAR" == "true" ]; then
                 echo "Ja existe um diretorio para o modulo resposta. Vamos assumir que o codigo la esteja integro"
 
             else
-                echo "Copiando o modulo resposta"
+
+                echo "Copiando o módulo gestao documental"
                 cp -Rf /sei-modulos/mod-sei-resposta /opt/sei/web/modulos/
+
+                cd /opt/sei/web/modulos/mod-sei-resposta/
+
+                git checkout $MODULO_RESPOSTA_VERSAO
+                echo "Versao do Resposta eh agora: $MODULO_RESPOSTA_VERSAO"
+
+                make clean
+                make dist
+                cd ..
+                mv mod-sei-resposta mod-sei-resposta.old
+
+                cd mod-sei-resposta.old/dist/
+
+                files=( *.zip )
+                f="${files[0]}"
+
+                mkdir temp
+                cd temp
+                mv ../$f .
+
+                yes | unzip $f
+
+                yes | cp -Rf sei sip /opt/
+
+                rm -rf /opt/sei/web/modulos/mod-sei-resposta.old
+
             fi
-
-
-            cd /opt/sei/web/modulos/mod-sei-resposta
-            git checkout $MODULO_RESPOSTA_VERSAO
-            echo "Versao do WSSEI é agora: $MODULO_RESPOSTA_VERSAO"
 
             cd /opt/sei/
-            sed -i "s#/\*novomodulo\*/#'MdRespostaIntegracao' => 'mod-sei-resposta/', /\*novomodulo\*/#g" config/ConfiguracaoSEI.php
-
-
-            TMPFILE_SEI=/opt/sei/web/modulos/mod-sei-resposta/sei_atualizar_versao_modulo_sei_resposta.php
-            if test -f "$TMPFILE_SEI"; then
-
-                # mover os scripts e executar
-                cp /opt/sei/web/modulos/mod-sei-resposta/sei_atualizar_versao_modulo_sei_resposta.php /opt/sei/scripts
-
-                echo "Vou rodar o script de atualizacao do modulo no SEI"
-                php -c /etc/php.ini /opt/sei/scripts/sei_atualizar_versao_modulo_sei_resposta.php
-            fi
-
-            TMPFILE_SIP=/opt/sei/web/modulos/mod-sei-resposta/sip_atualizar_versao_modulo_sei_resposta.php
-            if test -f "$TMPFILE_SIP"; then
-
-                # mover os scripts e executar
-                cp /opt/sei/web/modulos/mod-sei-resposta/sip_atualizar_versao_modulo_sei_resposta.php /opt/sip/scripts
-
-                echo "Vou rodar o script de atualizacao do modulo no SIP"
-                php -c /etc/php.ini /opt/sip/scripts/sip_atualizar_versao_modulo_sei_resposta.php
-            fi
-
-            touch /sei/controlador-instalacoes/instalado-modulo-resposta.ok
+            sed -i "s#/\*novomodulo\*/#'MdRespostaIntegracao' => 'mod-sei-resposta', /\*novomodulo\*/#g" config/ConfiguracaoSEI.php
 
         fi
 
@@ -483,13 +469,11 @@ if [ "$MODULO_GESTAODOCUMENTAL_INSTALAR" == "true" ]; then
 
               yes | cp -Rf sei sip /opt/
 
-
+              cd /opt/sei/
+              sed -i "s#/\*novomodulo\*/#'MdGestaoDocumentalIntegracao' => 'gestao-documental', /\*novomodulo\*/#g" config/ConfiguracaoSEI.php
               rm -rf /opt/sei/web/modulos/mod-gestao-documental.old
 
             fi
-
-            cd /opt/sei/
-            sed -i "s#/\*novomodulo\*/#'MdGestaoDocumentalIntegracao' => 'gestao-documental', /\*novomodulo\*/#g" config/ConfiguracaoSEI.php
 
         fi
 
@@ -710,7 +694,7 @@ if [ "$MODULO_PEN_INSTALAR" == "true" ]; then
 
             else
 
-                echo "Buildando o módulo dpen"
+                echo "Buildando o módulo pen"
 
                 cd /opt/sei/web/modulos
                 cp -R /sei-modulos/mod-sei-pen mod-sei-pen
@@ -739,21 +723,7 @@ if [ "$MODULO_PEN_INSTALAR" == "true" ]; then
 
                 # adiciona o certificado
                 cd /opt/sei/config/mod-pen
-                echo -n $MODULO_PEN_CERTIFICADO_BASE64 | base64 -d > /certificado.pem
-                sed -i "s/ | //1" /certificado.pem
-                sed -i "s/BEGIN CERTIFICATE/BEGINCERTIFICATE/g" /certificado.pem
-                sed -i "s/END CERTIFICATE/ENDCERTIFICATE/g" /certificado.pem
-                sed -i "s/BEGIN PRIVATE KEY/BEGINPRIVATEKEY/g" /certificado.pem
-                sed -i "s/END PRIVATE KEY/ENDPRIVATEKEY/g" /certificado.pem
-                cat /certificado.pem | tr ' ' '\n' > /certificado2.pem
-                rm -f /certificado.pem
-                mv /certificado2.pem /certificado.pem
-                sed -i "s/BEGINCERTIFICATE/BEGIN CERTIFICATE/g" /certificado.pem
-                sed -i "s/ENDCERTIFICATE/END CERTIFICATE/g" /certificado.pem
-                sed -i "s/BEGINPRIVATEKEY/BEGIN PRIVATE KEY/g" /certificado.pem
-                sed -i "s/ENDPRIVATEKEY/END PRIVATE KEY/g" /certificado.pem
-                echo "copiar certificado"
-                yes | cp -f /certificado.pem certificado.pem
+                echo -n $MODULO_PEN_CERTIFICADO_BASE64 | base64 -d > certificado.pem
                 echo "certificado copiado"
                 cat certificado.pem
 

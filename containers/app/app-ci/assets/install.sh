@@ -15,4 +15,4 @@ mkdir -p /sei/files/conf /sei/files/scripts-e-automatizadores/modulos
 mv /tmp/assets/conf/ConfiguracaoSEI.php /sei/files/conf
 mv /tmp/assets/conf/ConfiguracaoSip.php /sei/files/conf
 mv /tmp/assets/scripts-e-automatizadores/openldap /sei/files/scripts-e-automatizadores/
-mv /tmp/assets/scripts-e-automatizadores/modulos/mod-sei-estatisticas /sei/files/scripts-e-automatizadores/modulos/
+mv /tmp/assets/scripts-e-automatizadores/modulos/* /sei/files/scripts-e-automatizadores/modulos/
