@@ -106,7 +106,7 @@ spec:
         servico: jod
     spec:
       containers:
-      - image: supergovbr/jod:1.0
+      - image: supergovbr/jod:1.1
         imagePullPolicy: Always
         name: jod
         resources:
