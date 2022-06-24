@@ -42,7 +42,7 @@ spec:
         servico: memcached
     spec:
       containers:
-      - image: memcached
+      - image: ${DOCKER_IMAGE_MEMCACHED}
         imagePullPolicy: Always
         name: memcached
         resources:
@@ -106,7 +106,7 @@ spec:
         servico: jod
     spec:
       containers:
-      - image: supergovbr/jod:1.1
+      - image: ${DOCKER_IMAGE_JOD}
         imagePullPolicy: Always
         name: jod
         resources:

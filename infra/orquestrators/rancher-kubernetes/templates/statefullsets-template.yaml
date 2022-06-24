@@ -40,7 +40,7 @@ spec:
         servico: db
     spec:
       containers:
-      - image: supergovbr/mariadb10.5:1.1
+      - image: ${DOCKER_IMAGE_BD}
         imagePullPolicy: Always
         name: db
         resources:
@@ -136,7 +136,7 @@ spec:
         servico: solr
     spec:
       containers:
-      - image: supergovbr/solr8.2.0:1.1
+      - image: ${DOCKER_IMAGE_SOLR}
         imagePullPolicy: Always
         name: solr
         livenessProbe:
