@@ -70,7 +70,7 @@ spec:
           "Nao vamos alterar nada. " ;   echo "Caso o banco nao suba, verifique se
           nesse dir existe um banco e que as permissoes do arquivo estejam com o mysql
           (id 999)" ; fi;  exit 0
-        image: supergovbr/mariadb10.5:1.1
+        image: ${DOCKER_IMAGE_BD}
         imagePullPolicy: Always
         name: db-init
         resources:
@@ -186,7 +186,7 @@ spec:
             nada. " ; echo "Caso o solr nao suba, verifique se nesse dir existe um
             solr e que as permissoes do arquivo estejam com o Solr (id 1000)" ; fi;  exit
             0
-          image: supergovbr/solr8.2.0:1.1
+          image: ${DOCKER_IMAGE_SOLR}
           imagePullPolicy: Always
           name: solr-init
           resources:
