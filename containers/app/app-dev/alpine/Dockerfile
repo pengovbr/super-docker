@@ -8,35 +8,33 @@ RUN apk add --no-cache \
       apache2 \ 
       apache2-http2 \
       php7-apache2 \
-      php7-pear \
-      php7-mysqli \
       php7-bcmath \
-    php7-bcmath \
-    php7-gd \
-    php7-gmp \
-    php7-imap \
-    php7-intl \
-    php7-ldap \
-    php7-mbstring \
-    php7-odbc \
-    php7-pdo \
-    php7-pecl-apcu \
-    php7-pspell \
-    php7-zlib \
-    php7-snmp \
-    php7-soap \
-    php7-xml \
-    php7-xmlrpc \
-    php7-pecl-memcache \
-    php7-calendar \
-    php7-shmop \
-    php7-intl \
-    php7-mcrypt \
-    php7-zip \
-    php7-pecl-uploadprogress \
-      ; 
-RUN apk add --no-cache php7-gearman gearman-libs \
-      --repository=http://dl-cdn.alpinelinux.org/alpine/edge/testing 
+      php7-calendar \
+      php7-ctype \
+      php7-gd \
+      php7-gmp \
+      php7-imap \
+      php7-intl \
+      php7-ldap \
+      php7-mbstring \
+      php7-mcrypt \
+      php7-mysqli \
+      php7-odbc \
+      php7-pcntl \
+      php7-pdo \
+      php7-pear \
+      php7-pecl-apcu \
+      php7-pecl-memcached \
+      php7-pecl-uploadprogress \
+      php7-pspell \
+      php7-shmop \
+      php7-snmp \
+      php7-soap \
+      php7-xml \
+      php7-xmlrpc \
+      php7-zip \
+      php7-zlib \
+      ;
 
 # Pacotes para o wkhtmltopdf
 RUN apk add --update --no-cache \
