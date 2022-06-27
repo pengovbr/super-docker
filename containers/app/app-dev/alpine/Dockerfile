@@ -37,6 +37,15 @@ RUN apk add --no-cache \
       ; 
 RUN apk add --no-cache php7-gearman gearman-libs \
       --repository=http://dl-cdn.alpinelinux.org/alpine/edge/testing 
+
+# Pacotes para o wkhtmltopdf
+RUN apk add --update --no-cache \
+    libgcc libstdc++ libx11 glib libxrender libxext libintl \
+    ttf-dejavu ttf-droid ttf-freefont ttf-liberation ttf-ubuntu-font-family
+
+# wkhtmltopdf #
+COPY --from=madnight/alpine-wkhtmltopdf-builder:0.12.5-alpine3.10-866998106 \
+    /bin/wkhtmltopdf /bin/wkhtmltopdf
       
 COPY assets/sei.ini /etc/php7/conf.d/
 COPY assets/sei.conf /etc/apache2/conf.d/ 
