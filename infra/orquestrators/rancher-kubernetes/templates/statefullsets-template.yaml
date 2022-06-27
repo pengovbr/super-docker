@@ -1,3 +1,6 @@
+# para facilitar o deploy em dev, vamos criar aqui o solr e o banco como deployments, em eventual prod crie-os
+# como statefulsets
+
 apiVersion: v1
 kind: Service
 metadata:
@@ -19,25 +22,25 @@ spec:
 
 
 apiVersion: apps/v1
-kind: StatefulSet
+kind: Deployment
 metadata:
   name: db
   namespace: ${KUBERNETES_NAMESPACE}
 spec:
-  podManagementPolicy: OrderedReady
   replicas: 1
   revisionHistoryLimit: 10
   selector:
     matchLabels:
       servico: db
-  serviceName: db
+  strategy:
+    type: Recreate
   template:
     metadata:
       labels:
         servico: db
     spec:
       containers:
-      - image: supergovbr/mariadb10.5:1.0
+      - image: ${DOCKER_IMAGE_BD}
         imagePullPolicy: Always
         name: db
         resources:
@@ -67,7 +70,7 @@ spec:
           "Nao vamos alterar nada. " ;   echo "Caso o banco nao suba, verifique se
           nesse dir existe um banco e que as permissoes do arquivo estejam com o mysql
           (id 999)" ; fi;  exit 0
-        image: supergovbr/mariadb10.5:1.0
+        image: ${DOCKER_IMAGE_BD}
         imagePullPolicy: Always
         name: db-init
         resources:
@@ -90,10 +93,6 @@ spec:
       - name: vol1
         persistentVolumeClaim:
           claimName: vol-sei-db
-  updateStrategy:
-    rollingUpdate:
-      partition: 0
-    type: RollingUpdate
 
 
 ---
@@ -119,25 +118,25 @@ spec:
 ---
 
 apiVersion: apps/v1
-kind: StatefulSet
+kind: Deployment
 metadata:
   name: solr
   namespace: ${KUBERNETES_NAMESPACE}
 spec:
-  podManagementPolicy: OrderedReady
   replicas: 1
   revisionHistoryLimit: 10
   selector:
     matchLabels:
       servico: solr
-  serviceName: solr
+  strategy:
+    type: Recreate
   template:
     metadata:
       labels:
         servico: solr
     spec:
       containers:
-      - image: supergovbr/solr8.2.0:1.0
+      - image: ${DOCKER_IMAGE_SOLR}
         imagePullPolicy: Always
         name: solr
         livenessProbe:
@@ -187,7 +186,7 @@ spec:
             nada. " ; echo "Caso o solr nao suba, verifique se nesse dir existe um
             solr e que as permissoes do arquivo estejam com o Solr (id 1000)" ; fi;  exit
             0
-          image: supergovbr/solr8.2.0:1.0
+          image: ${DOCKER_IMAGE_SOLR}
           imagePullPolicy: Always
           name: solr-init
           resources:
@@ -210,8 +209,4 @@ spec:
       - name: vol1
         persistentVolumeClaim:
           claimName: vol-sei-solr
-  updateStrategy:
-    rollingUpdate:
-      partition: 0
-    type: RollingUpdate
 

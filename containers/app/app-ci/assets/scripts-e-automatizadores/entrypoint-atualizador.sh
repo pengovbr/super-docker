@@ -59,7 +59,33 @@ echo "**INICIANDO CONFIGURACOES BASICAS DO APACHE E SEI**"
 echo "***************************************************"
 echo "***************************************************"
 
-sleep 5
+if [ -z "$APP_FONTES_GIT_PATH" ] || \
+   [ -z "$APP_FONTES_GIT_PRIVKEY_BASE64" ] || \
+   [ -z "$APP_FONTES_GIT_CHECKOUT" ]; then
+    echo "Vamos tentar usar o codigo fonte fornecido na pasta /opt (via volume)."
+else
+    echo "Vamos tentar baixar o fonte do git com os parametros fornecidos"
+
+    cd /tmp
+    echo -n "$APP_FONTES_GIT_PRIVKEY_BASE64" | base64 -d > /tmp/lhave.key
+    chmod 500 lhave.key
+
+    echo '#!/bin/bash' > /tmp/gitwrap.sh
+    echo 'ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i /tmp/lhave.key "$@"' >> /tmp/gitwrap.sh
+    chmod +x gitwrap.sh
+
+    echo "Fazendo o clone dos fontes. Aguarde..."
+    export GIT_SSH=/tmp/gitwrap.sh
+    git clone $APP_FONTES_GIT_PATH
+    export GIT_SSH=ssh
+
+    echo "Fazendo a copia dos fontes. Aguarde..."
+    cd super
+    git checkout $APP_FONTES_GIT_CHECKOUT
+    cp -R src/* /opt/
+    cd /
+    rm -rf /tmp/super /tmp/lhave.key
+fi
 
 APP_HOST_URL=$APP_PROTOCOLO://$APP_HOST
 
@@ -450,8 +476,8 @@ if [ "$MODULO_ESTATISTICAS_INSTALAR" == "true" ]; then
 
         if [ -z "$MODULO_ESTATISTICAS_VERSAO" ] || \
            [ -z "$MODULO_ESTATISTICAS_URL" ] || \
-	       [ -z "$MODULO_ESTATISTICAS_SIGLA" ] || \
-	       [ -z "$MODULO_ESTATISTICAS_CHAVE" ]; then
+	         [ -z "$MODULO_ESTATISTICAS_SIGLA" ] || \
+	         [ -z "$MODULO_ESTATISTICAS_CHAVE" ]; then
             echo "Informe as seguinte variaveis de ambiente no container:"
             echo "MODULO_ESTATISTICAS_VERSAO, MODULO_ESTATISTICAS_URL, MODULO_ESTATISTICAS_SIGLA, MODULO_ESTATISTICAS_CHAVE"
 
@@ -465,7 +491,6 @@ if [ "$MODULO_ESTATISTICAS_INSTALAR" == "true" ]; then
                 echo "Copiando o módulo de estatísticas"
                 cp -Rf /sei-modulos/mod-sei-estatisticas /opt/sei/web/modulos/
             fi
-
 
             cd /opt/sei/web/modulos/mod-sei-estatisticas
             git checkout $MODULO_ESTATISTICAS_VERSAO
@@ -498,23 +523,23 @@ fi
 
 echo "***************************************************"
 echo "***************************************************"
-echo "**CONFIGURANDO MODULO WSSEI************************"
+echo "**CONFIGURANDO MODULO WSSUPER************************"
 echo "***************************************************"
 echo "***************************************************"
-if [ "$MODULO_WSSEI_INSTALAR" == "true" ]; then
+if [ "$MODULO_WSSUPER_INSTALAR" == "true" ]; then
 
-    if [ ! -f /sei/controlador-instalacoes/instalado-modulo-wssei.ok ]; then
+    if [ ! -f /sei/controlador-instalacoes/instalado-modulo-wssuper.ok ]; then
 
-        if [ -z "$MODULO_WSSEI_VERSAO" ] || \
-           [ -z "$MODULO_WSSEI_URL_NOTIFICACAO" ] || \
-	       [ -z "$MODULO_WSSEI_ID_APP" ] || \
-	       [ -z "$MODULO_WSSEI_CHAVE" ]; then
+        if [ -z "$MODULO_WSSUPER_VERSAO" ] || \
+           [ -z "$MODULO_WSSUPER_URL_NOTIFICACAO" ] || \
+	       [ -z "$MODULO_WSSUPER_ID_APP" ] || \
+	       [ -z "$MODULO_WSSUPER_CHAVE" ]; then
             echo "Informe as seguinte variaveis de ambiente no container:"
-            echo "MODULO_WSSEI_VERSAO, MODULO_WSSEI_URL_NOTIFICACAO, MODULO_WSSEI_ID_APP, MODULO_WSSEI_CHAVE"
+            echo "MODULO_WSSUPER_VERSAO, MODULO_WSSUPER_URL_NOTIFICACAO, MODULO_WSSUPER_ID_APP, MODULO_WSSUPER_CHAVE"
 
         else
 
-            echo "Verificando existencia do modulo wssei"
+            echo "Verificando existencia do modulo wssuper"
             if [ -d "/opt/sei/web/modulos/mod-wssei" ]; then
                 echo "Ja existe um diretorio para o modulo wssei. Vamos assumir que o codigo la esteja integro"
 
@@ -525,12 +550,12 @@ if [ "$MODULO_WSSEI_INSTALAR" == "true" ]; then
 
 
             cd /opt/sei/web/modulos/mod-wssei
-            git checkout $MODULO_WSSEI_VERSAO
-            echo "Versao do WSSEI é agora: $MODULO_WSSEI_VERSAO"
+            git checkout $MODULO_WSSUPER_VERSAO
+            echo "Versao do WSSEI é agora: $MODULO_WSSUPER_VERSAO"
 
             cd /opt/sei/
             sed -i "s#/\*novomodulo\*/#'MdWsSeiRest' => 'mod-wssei/', /\*novomodulo\*/#g" config/ConfiguracaoSEI.php
-            sed -i "s#/\*extramodulesconfig\*/#'WSSEI' => array('UrlServicoNotificacao' => '$MODULO_WSSEI_URL_NOTIFICACAO', 'IdApp' => '$MODULO_WSSEI_ID_APP', 'ChaveAutorizacao' => '$MODULO_WSSEI_CHAVE', 'TokenSecret' => '504CE1E9-8913-488F-AB3E-EDDABC065B0B'  ), /\*extramodulesconfig\*/#g" config/ConfiguracaoSEI.php
+            sed -i "s#/\*extramodulesconfig\*/#'WSSEI' => array('UrlServicoNotificacao' => '$MODULO_WSSUPER_URL_NOTIFICACAO', 'IdApp' => '$MODULO_WSSUPER_ID_APP', 'ChaveAutorizacao' => '$MODULO_WSSUPER_CHAVE', 'TokenSecret' => '504CE1E9-8913-488F-AB3E-EDDABC065B0B'  ), /\*extramodulesconfig\*/#g" config/ConfiguracaoSEI.php
 
 
             TMPFILE=/opt/sei/web/modulos/mod-wssei/scripts/sei_atualizar_versao_modulo_wssei.php
@@ -543,19 +568,19 @@ if [ "$MODULO_WSSEI_INSTALAR" == "true" ]; then
                 php -c /etc/php.ini /opt/sei/scripts/sei_atualizar_versao_modulo_wssei.php
             fi
 
-            touch /sei/controlador-instalacoes/instalado-modulo-wssei.ok
+            touch /sei/controlador-instalacoes/instalado-modulo-wssuper.ok
 
         fi
 
     else
 
-        echo "Arquivo de controle do Modulo WSSEI encontrado pulando configuracao do modulo"
+        echo "Arquivo de controle do Modulo WSSUPER encontrado pulando configuracao do modulo"
 
     fi
 
 else
 
-    echo "Variavel MODULO_WSSEI_INSTALAR nao setada para true, pulando configuracao..."
+    echo "Variavel MODULO_WSSUPER_INSTALAR nao setada para true, pulando configuracao..."
 
 fi
 
@@ -574,45 +599,46 @@ if [ "$MODULO_RESPOSTA_INSTALAR" == "true" ]; then
 
         else
 
-            echo "Verificando existencia do modulo resposta"
-            if [ -d "/opt/sei/web/modulos/mod-sei-resposta" ]; then
-                echo "Ja existe um diretorio para o modulo resposta. Vamos assumir que o codigo la esteja integro"
+          rm -rf /opt/sei/web/modulos/mod-sei-resposta/
+          echo "Copiando o módulo de resposta"
+          cp -Rf /sei-modulos/mod-sei-resposta /opt/sei/web/modulos/
 
-            else
-                echo "Copiando o módulo resposta"
-                cp -Rf /sei-modulos/mod-sei-resposta /opt/sei/web/modulos/
-            fi
+          cd /opt/sei/web/modulos/mod-sei-resposta/
+          git checkout $MODULO_RESPOSTA_VERSAO
+          echo "Versao do Resposta é agora: $MODULO_RESPOSTA_VERSAO"
 
+          \cp envs/mysql.env .env
+          \cp envs/modulo.env .modulo.env
+          make clean
+          make dist
+          cd ..
+          mv mod-sei-resposta mod-sei-resposta.old
 
-            cd /opt/sei/web/modulos/mod-sei-resposta
-            git checkout $MODULO_RESPOSTA_VERSAO
-            echo "Versao do WSSEI é agora: $MODULO_RESPOSTA_VERSAO"
+          cd mod-sei-resposta.old/dist/
 
-            cd /opt/sei/
-            sed -i "s#/\*novomodulo\*/#'MdRespostaIntegracao' => 'mod-sei-resposta/', /\*novomodulo\*/#g" config/ConfiguracaoSEI.php
+          files=( *.zip )
+          f="${files[0]}"
 
+          mkdir temp
+          cd temp
+          mv ../$f .
 
-            TMPFILE_SEI=/opt/sei/web/modulos/mod-sei-resposta/sei_atualizar_versao_modulo_sei_resposta.php
-            if test -f "$TMPFILE_SEI"; then
+          yes | unzip $f
 
-                # mover os scripts e executar
-                cp /opt/sei/web/modulos/mod-sei-resposta/sei_atualizar_versao_modulo_sei_resposta.php /opt/sei/scripts
+          yes | cp -Rf sei sip /opt/
 
-                echo "Vou rodar o script de atualizacao do modulo no SEI"
-                php -c /etc/php.ini /opt/sei/scripts/sei_atualizar_versao_modulo_sei_resposta.php
-            fi
+          cd /opt/sei/
+          sed -i "s#/\*novomodulo\*/#'MdRespostaIntegracao' => 'mod-sei-resposta', /\*novomodulo\*/#g" config/ConfiguracaoSEI.php
 
-            TMPFILE_SIP=/opt/sei/web/modulos/mod-sei-resposta/sip_atualizar_versao_modulo_sei_resposta.php
-            if test -f "$TMPFILE_SIP"; then
+          cd /opt/sip/scripts/mod-sei-resposta/
 
-                # mover os scripts e executar
-                cp /opt/sei/web/modulos/mod-sei-resposta/sip_atualizar_versao_modulo_sei_resposta.php /opt/sip/scripts
+          echo -ne "$APP_DB_SIP_USERNAME\n$APP_DB_SIP_PASSWORD\n" | php sip_atualizar_versao_modulo_resposta.php
 
-                echo "Vou rodar o script de atualizacao do modulo no SIP"
-                php -c /etc/php.ini /opt/sip/scripts/sip_atualizar_versao_modulo_sei_resposta.php
-            fi
+          cd /opt/sei/scripts/mod-sei-resposta/
+          echo -ne "$APP_DB_SEI_USERNAME\n$APP_DB_SEI_PASSWORD\n" | php sei_atualizar_versao_modulo_resposta.php
 
-            touch /sei/controlador-instalacoes/instalado-modulo-resposta.ok
+          rm -rf /opt/sei/web/modulos/mod-sei-resposta.old
+          touch /sei/controlador-instalacoes/instalado-modulo-resposta.ok
 
         fi
 
@@ -643,11 +669,7 @@ if [ "$MODULO_GESTAODOCUMENTAL_INSTALAR" == "true" ]; then
 
         else
 
-            echo "Verificando existencia do modulo gestao documental"
-            if [ -d "/opt/sei/web/modulos/gestao-documental" ]; then
-                echo "Ja existe um diretorio para o modulo gestao documental. Vamos assumir que o codigo la esteja integro"
-
-            else
+            rm -rf /opt/sei/web/modulos/mod-gestao-documental/ /opt/sei/web/modulos/gestao-documental/
                 echo "Copiando o módulo gestao documental"
                 cp -Rf /sei-modulos/mod-gestao-documental /opt/sei/web/modulos/
 
@@ -690,7 +712,7 @@ if [ "$MODULO_GESTAODOCUMENTAL_INSTALAR" == "true" ]; then
                 rm -rf /opt/sei/web/modulos/mod-gestao-documental.old
 
                 touch /sei/controlador-instalacoes/instalado-modulo-gestaodocumental.ok
-            fi
+
 
         fi
 
@@ -741,6 +763,7 @@ if [ "$MODULO_LOGINUNICO_INSTALAR" == "true" ]; then
               echo "Ja existe um diretorio para o modulo de loginunico. Vamos assumir que o codigo la esteja integro"
 
           else
+              rm -rf /opt/sei/web/modulos/mod-sei-loginunico/ /opt/sei/web/modulos/loginunico/
               echo "Copiando o módulo de loginunico"
               cp -Rf /sei-modulos/mod-sei-loginunico /opt/sei/web/modulos/
 
@@ -831,13 +854,8 @@ if [ "$MODULO_ASSINATURAVANCADA_INSTALAR" == "true" ]; then
 
         else
 
-            echo "Verificando existencia do modulo de assinatura avancada"
-            if [ -d "/opt/sei/web/modulos/assinatura-avancada" ]; then
-                echo "Ja existe um diretorio para o modulo de assinatura avancada. Vamos assumir que o codigo la esteja integro"
-
-            else
                 echo "Copiando o módulo de assinatura avancada"
-
+                rm -rf /opt/sei/web/modulos/mod-sei-assinatura-avancada /opt/sei/web/modulos/assinatura-avancada
                 cd /opt/sei/web/modulos
                 cp -R /sei-modulos/mod-sei-assinatura-avancada .
                 cd mod-sei-assinatura-avancada/
@@ -887,10 +905,6 @@ if [ "$MODULO_ASSINATURAVANCADA_INSTALAR" == "true" ]; then
 
                 touch /sei/controlador-instalacoes/instalado-modulo-assinaturavancada.ok
 
-
-            fi
-
-
         fi
 
     else
@@ -923,13 +937,9 @@ if [ "$MODULO_PEN_INSTALAR" == "true" ]; then
 
         else
 
-            echo "Verificando existencia do modulo PEN"
-            if [ -d "/opt/sei/web/modulos/pen" ]; then
-                echo "Ja existe um diretorio para o modulo do PEN. Vamos assumir que o codigo la esteja integro"
-
-            else
                 echo "Buildando o módulo do pen"
 
+                rm -rf /opt/sei/web/modulos/mod-sei-pen /opt/sei/web/modulos/pen
                 cd /opt/sei/web/modulos
                 cp -R /sei-modulos/mod-sei-pen mod-sei-pen
                 cd mod-sei-pen
@@ -958,24 +968,9 @@ if [ "$MODULO_PEN_INSTALAR" == "true" ]; then
 
                 # adiciona o certificado
                 cd /opt/sei/config/mod-pen
-                echo -n $MODULO_PEN_CERTIFICADO_BASE64 | base64 -d > /certificado.pem
-                sed -i "s/ | //1" /certificado.pem
-                sed -i "s/BEGIN CERTIFICATE/BEGINCERTIFICATE/g" /certificado.pem
-                sed -i "s/END CERTIFICATE/ENDCERTIFICATE/g" /certificado.pem
-                sed -i "s/BEGIN PRIVATE KEY/BEGINPRIVATEKEY/g" /certificado.pem
-                sed -i "s/END PRIVATE KEY/ENDPRIVATEKEY/g" /certificado.pem
-                cat /certificado.pem | tr ' ' '\n' > /certificado2.pem
-                rm -f /certificado.pem
-                mv /certificado2.pem /certificado.pem
-                sed -i "s/BEGINCERTIFICATE/BEGIN CERTIFICATE/g" /certificado.pem
-                sed -i "s/ENDCERTIFICATE/END CERTIFICATE/g" /certificado.pem
-                sed -i "s/BEGINPRIVATEKEY/BEGIN PRIVATE KEY/g" /certificado.pem
-                sed -i "s/ENDPRIVATEKEY/END PRIVATE KEY/g" /certificado.pem
-                echo "copiar certificado"
-                yes | cp -f /certificado.pem certificado.pem
+                echo -n $MODULO_PEN_CERTIFICADO_BASE64 | base64 -d > certificado.pem
                 echo "certificado copiado"
                 cat certificado.pem
-                
 
                 # adiciona config
                 cd /opt/sei
@@ -986,11 +981,11 @@ if [ "$MODULO_PEN_INSTALAR" == "true" ]; then
                 php sei/scripts/mod-pen/sei_atualizar_versao_modulo_pen.php
                 
                 rm -rf /opt/sei/web/modulos/mod-sei-pen.old
+                
+                echo "Iniciar Configuracao automatica do modulo"
+                source /sei/files/scripts-e-automatizadores/modulos/mod-sei-pen/mod-sei-pen.sh
 
                 touch /sei/controlador-instalacoes/instalado-modulo-pen.ok
-                
-
-            fi
 
         fi
 

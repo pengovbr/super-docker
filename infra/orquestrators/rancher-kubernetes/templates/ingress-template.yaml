@@ -1,4 +1,4 @@
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   annotations:
@@ -19,9 +19,13 @@ spec:
     http:
       paths:
       - backend:
-          serviceName: sei-app
-          servicePort: 443
+          service:
+            name: sei-app
+            port:
+              number: 443
+        path: /
+        pathType: Prefix
   tls:
   - hosts:
     - ${APP_HOST}
-    secretName: tls-sei1
+    #secretName: tls-sei1

@@ -19,9 +19,26 @@ LOGS_SEGUIR=true
 
 DIR := ${CURDIR}
 COMMMADCOMPOSE = docker-compose -f orquestrators/docker-compose/docker-compose.yml 
+CMD_CURL_SUPER_LOGIN = curl -s -L -k $(APP_PROTOCOLO)://$(APP_HOST)/sei | grep "txtUsuario"
 
 help:   ## Lista de comandos disponiveis e descricao. Voce pode usar TAB para completar os comandos
 	@fgrep -h "##" $(MAKEFILE_LIST) | fgrep -v fgrep | sed -e 's/\\$$//' | sed -e 's/##//'
+
+
+check-super-isalive: ## Target de apoio. Acessa o Super e verifica se esta respondendo a tela de login
+	@echo "Vamos tentar acessar a pagina de login do SUPER, vamos aguardar ate 95 segs."
+	@for number in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37; do \
+	    echo 'Tentando acessar...'; var=$$(echo $$($(CMD_CURL_SUPER_LOGIN))); \
+			if [ "$$var" != "" ]; then \
+					echo 'Pagina respondeu com tela de login' ; \
+					break ; \
+			else \
+			    echo 'Aguardando resposta ...'; \
+			fi; \
+			sleep 5; \
+	done; \
+	var=$$(echo $$($(CMD_CURL_SUPER_LOGIN))); \
+	if [ "$$var" == "" ]; then echo 'Pagina de login nao respondeu. Verifique. Abandonando execucao'; exit 1 ; fi;
 
 
 test_ambiente_localhost_mysql:
@@ -51,8 +68,8 @@ criar_volume_certs: ## Cria o volume docker com os certs que serao consumidos pe
 ifneq ("$(EXISTE_LOCAL_CERTS)",  "")
 	@echo "Ja existe um volume de Certificados. Voce pode apaga-lo com o comando make apagar_volume_certs"
 else
-	docker run --rm -v $(LOCALIZACAO_CERTS):/source -v $(VOLUME_CERTS):/destino -w /source --entrypoint="" supergovbr/haproxy:1.0 sh -c "echo ''; echo ''; echo ''; if [[ -f cert0.pem ]] ; then echo 'Cert para o balanceador ja existe, pulando.';echo ''; echo ''; echo '';  else echo 'Cert para o balanceador nao existe. Copiando auto assinado default...' ; cp /mycertexample/cert0.pem /destino ; echo 'Copiado';echo ''; echo ''; echo '';  fi"
-	docker run --rm -v $(LOCALIZACAO_CERTS):/source -v $(VOLUME_CERTS):/destino -w /source --entrypoint="" supergovbr/haproxy:1.0 sh -c "if [ ! -f seiapp/sei-ca.pem ] || [ ! -f seiapp/sei.crt ] || [ ! -f seiapp/sei.key ]; then echo ''; echo ''; echo ''; echo 'CA, cert ou key nao existe para o SEI. O conteiner de app vai criar um auto assinado. Nao se preocupe caso esteja usando um cert valido no balanceador'; echo ''; echo ''; echo '';  else echo ''; echo ''; echo ''; echo 'CA, cert e key encontradas para o SEI, pulando.';  echo ''; echo ''; echo '';  fi"
+	docker run --rm -v $(LOCALIZACAO_CERTS):/source -v $(VOLUME_CERTS):/destino -w /source --entrypoint="" supergovbr/haproxy:1.1 sh -c "echo ''; echo ''; echo ''; if [[ -f cert0.pem ]] ; then echo 'Cert para o balanceador ja existe, pulando.';echo ''; echo ''; echo '';  else echo 'Cert para o balanceador nao existe. Copiando auto assinado default...' ; cp /mycertexample/cert0.pem /destino ; echo 'Copiado';echo ''; echo ''; echo '';  fi"
+	docker run --rm -v $(LOCALIZACAO_CERTS):/source -v $(VOLUME_CERTS):/destino -w /source --entrypoint="" supergovbr/haproxy:1.1 sh -c "if [ ! -f seiapp/sei-ca.pem ] || [ ! -f seiapp/sei.crt ] || [ ! -f seiapp/sei.key ]; then echo ''; echo ''; echo ''; echo 'CA, cert ou key nao existe para o SEI. O conteiner de app vai criar um auto assinado. Nao se preocupe caso esteja usando um cert valido no balanceador'; echo ''; echo ''; echo '';  else echo ''; echo ''; echo ''; echo 'CA, cert e key encontradas para o SEI, pulando.';  echo ''; echo ''; echo '';  fi"
 	
 endif
 
@@ -392,7 +409,7 @@ apagar_volume_controlador_instalacao: ## Apagar volume controlador da instalacao
 	docker volume rm $(VOLUME_CONTROLADOR_INSTALACAO) || true
 
 
-kubernetes_montar_yaml:
+kubernetes_montar_yaml: ## Montar receitas para kubernetes - apenas mysql
 	@echo "Vamos montar os arquivos yaml para o kubernetes. Apenas mysql e somente componentes essenciais..."
 	@rm -rf orquestrators/rancher-kubernetes/topublish/configmaps.yaml \
 	orquestrators/rancher-kubernetes/topublish/deploys-svc.yaml \
@@ -417,4 +434,28 @@ kubernetes_montar_yaml:
 	@echo "Comece publicando o configmap e o secret, depois os pvcs e em seguida os demais componentes"
 	@echo "Como o codigo fonte do SEI nao eh publico faz-se necessario mover manualmente os fontes para o pvc vol-sei-fontes"
 
-	
+
+kubernetes_apply: ## Aplicar receitas no cluster kubernetes
+	cd orquestrators/rancher-kubernetes/topublish/; \
+	kubectl --insecure-skip-tls-verify apply -f configmaps.yaml; \
+	kubectl --insecure-skip-tls-verify apply -f secrets.yaml; \
+	kubectl --insecure-skip-tls-verify apply -f pvc.yaml; \
+	kubectl --insecure-skip-tls-verify apply -f jobs.yaml; \
+	kubectl --insecure-skip-tls-verify apply -f statefullsets.yaml; \
+	kubectl --insecure-skip-tls-verify apply -f deploys-svc.yaml; \
+	kubectl --insecure-skip-tls-verify apply -f ingress.yaml;
+
+
+kubernetes_delete: ## deletar receitas do cluster
+	cd orquestrators/rancher-kubernetes/topublish/; \
+	kubectl --insecure-skip-tls-verify  delete -f ingress.yaml --wait=true --cascade='foreground'; \
+	kubectl --insecure-skip-tls-verify  delete -f deploys-svc.yaml --wait=true --cascade='foreground'; \
+	kubectl --insecure-skip-tls-verify  delete -f statefullsets.yaml --wait=true --cascade='foreground'; \
+	kubectl --insecure-skip-tls-verify  delete -f jobs.yaml --wait=true --cascade='foreground'; \
+	kubectl --insecure-skip-tls-verify  delete -f configmaps.yaml --wait=true --cascade='foreground'; \
+	kubectl --insecure-skip-tls-verify  delete -f secrets.yaml --wait=true --cascade='foreground'; \
+	kubectl --insecure-skip-tls-verify  delete -f pvc.yaml --wait=true --cascade='foreground';
+
+
+kubernetes_check_deploy_generic: ## verifica se determinado deploy ja esta pronto para uso no cluster
+	kubectl --insecure-skip-tls-verify wait deployment $(KUBE_DEPLOY_NAME) --for condition="Available=True" --namespace=$$KUBERNETES_NAMESPACE --timeout=180s
