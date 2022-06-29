@@ -11,6 +11,8 @@ RUN apk add --no-cache \
       php7-bcmath \
       php7-calendar \
       php7-ctype \
+      php7-curl \
+      php7-dom \
       php7-gd \
       php7-gmp \
       php7-imap \
@@ -24,6 +26,8 @@ RUN apk add --no-cache \
       php7-pdo \
       php7-pear \
       php7-pecl-apcu \
+      php7-pecl-mcrypt \
+      php7-pecl-memcache \
       php7-pecl-memcached \
       php7-pecl-uploadprogress \
       php7-pspell \
@@ -47,6 +51,8 @@ COPY --from=madnight/alpine-wkhtmltopdf-builder:0.12.5-alpine3.10-866998106 \
       
 COPY assets/sei.ini /etc/php7/conf.d/
 COPY assets/sei.conf /etc/apache2/conf.d/ 
+
+RUN apk add openjdk8
 
 EXPOSE 80
 CMD ["httpd", "-DFOREGROUND"]
