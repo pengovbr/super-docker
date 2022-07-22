@@ -978,7 +978,7 @@ if [ "$MODULO_PEN_INSTALAR" == "true" ]; then
 
                 cd /opt
                 echo -ne "$APP_DB_SIP_USERNAME\n$APP_DB_SIP_PASSWORD\n" | php sip/scripts/mod-pen/sip_atualizar_versao_modulo_pen.php
-                echo -ne "$APP_DB_SIP_USERNAME\n$APP_DB_SIP_PASSWORD\n" | php sei/scripts/mod-pen/sei_atualizar_versao_modulo_pen.php
+                echo -ne "$APP_DB_SEI_USERNAME\n$APP_DB_SEI_PASSWORD\n" | php sei/scripts/mod-pen/sei_atualizar_versao_modulo_pen.php
                 
                 rm -rf /opt/sei/web/modulos/mod-sei-pen.old
                 
