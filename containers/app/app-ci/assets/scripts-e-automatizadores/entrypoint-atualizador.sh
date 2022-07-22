@@ -977,8 +977,8 @@ if [ "$MODULO_PEN_INSTALAR" == "true" ]; then
                 sed -i "s#/\*novomodulo\*/#'PENIntegracao' => 'pen', /\*novomodulo\*/#g" config/ConfiguracaoSEI.php
 
                 cd /opt
-                php sip/scripts/mod-pen/sip_atualizar_versao_modulo_pen.php
-                php sei/scripts/mod-pen/sei_atualizar_versao_modulo_pen.php
+                echo -ne "$APP_DB_SIP_USERNAME\n$APP_DB_SIP_PASSWORD\n" | php sip/scripts/mod-pen/sip_atualizar_versao_modulo_pen.php
+                echo -ne "$APP_DB_SIP_USERNAME\n$APP_DB_SIP_PASSWORD\n" | php sei/scripts/mod-pen/sei_atualizar_versao_modulo_pen.php
                 
                 rm -rf /opt/sei/web/modulos/mod-sei-pen.old
                 
