@@ -947,7 +947,7 @@ if [ "$MODULO_PEN_INSTALAR" == "true" ]; then
                 echo "Versao do PEN agora: $MODULO_PEN_VERSAO"
                 
                 make clean
-                make build
+                make dist
                 cd dist
                 files=( *.zip )
                 f="${files[0]}"
