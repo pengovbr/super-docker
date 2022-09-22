@@ -77,6 +77,9 @@ yum -y install \
 
 cd /tmp/assets/pacotes
 
+# Configuração do pacote de línguas pt_BR
+localedef pt_BR -i pt_BR -f ISO-8859-1
+
 # Instalação do componentes UploadProgress
 tar -zxvf uploadprogress.tgz
 cd uploadprogress
