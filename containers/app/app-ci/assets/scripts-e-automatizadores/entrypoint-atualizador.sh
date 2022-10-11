@@ -804,9 +804,9 @@ if [ "$MODULO_LOGINUNICO_INSTALAR" == "true" ]; then
               sed -i "s#LOGIN_UNICO_REDIRECT_URL#MODULO_LOGINUNICO_REDIRECTURL#g" ConfiguracaoModLoginUnico.php
               sed -i "s#LOGIN_UNICO_URL_LOGOUT#MODULO_LOGINUNICO_URLLOGOUT#g" ConfiguracaoModLoginUnico.php
               sed -i "s#LOGIN_UNICO_URL_SERVICOS#MODULO_LOGINUNICO_URLSERVICOS#g" ConfiguracaoModLoginUnico.php
-              sed -i "s#LOGIN_UNICO_REVALIDACAO_CLIENT_ID#MODULO_LOGINUNICO_URLREVALIDACAO#g" ConfiguracaoModLoginUnico.php
+              sed -i "s#LOGIN_UNICO_REVALIDACAO_CLIENT_ID#MODULO_LOGINUNICO_CIENTIDVALIDACAO#g" ConfiguracaoModLoginUnico.php
               sed -i "s#LOGIN_UNICO_REVALIDACAO_SECRET#MODULO_LOGINUNICO_SECRETVALIDACAO#g" ConfiguracaoModLoginUnico.php
-              sed -i "s#LOGIN_UNICO_REVALIDACAO_URL#MODULO_LOGINUNICO_CIENTIDVALIDACAO#g" ConfiguracaoModLoginUnico.php
+              sed -i "s#LOGIN_UNICO_REVALIDACAO_URL#MODULO_LOGINUNICO_URLREVALIDACAO#g" ConfiguracaoModLoginUnico.php
 
               cd /opt/sip/scripts/mod-loginunico/
 
@@ -947,7 +947,7 @@ if [ "$MODULO_PEN_INSTALAR" == "true" ]; then
                 echo "Versao do PEN agora: $MODULO_PEN_VERSAO"
                 
                 make clean
-                make build
+                make dist
                 cd dist
                 files=( *.zip )
                 f="${files[0]}"
@@ -977,8 +977,8 @@ if [ "$MODULO_PEN_INSTALAR" == "true" ]; then
                 sed -i "s#/\*novomodulo\*/#'PENIntegracao' => 'pen', /\*novomodulo\*/#g" config/ConfiguracaoSEI.php
 
                 cd /opt
-                php sip/scripts/mod-pen/sip_atualizar_versao_modulo_pen.php
-                php sei/scripts/mod-pen/sei_atualizar_versao_modulo_pen.php
+                echo -ne "$APP_DB_SIP_USERNAME\n$APP_DB_SIP_PASSWORD\n" | php sip/scripts/mod-pen/sip_atualizar_versao_modulo_pen.php
+                echo -ne "$APP_DB_SEI_USERNAME\n$APP_DB_SEI_PASSWORD\n" | php sei/scripts/mod-pen/sei_atualizar_versao_modulo_pen.php
                 
                 rm -rf /opt/sei/web/modulos/mod-sei-pen.old
                 

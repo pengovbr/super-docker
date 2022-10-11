@@ -565,9 +565,9 @@ if [ "$MODULO_LOGINUNICO_INSTALAR" == "true" ]; then
               sed -i "s#LOGIN_UNICO_REDIRECT_URL#MODULO_LOGINUNICO_REDIRECTURL#g" ConfiguracaoModLoginUnico.php
               sed -i "s#LOGIN_UNICO_URL_LOGOUT#MODULO_LOGINUNICO_URLLOGOUT#g" ConfiguracaoModLoginUnico.php
               sed -i "s#LOGIN_UNICO_URL_SERVICOS#MODULO_LOGINUNICO_URLSERVICOS#g" ConfiguracaoModLoginUnico.php
-              sed -i "s#LOGIN_UNICO_REVALIDACAO_CLIENT_ID#MODULO_LOGINUNICO_URLREVALIDACAO#g" ConfiguracaoModLoginUnico.php
+              sed -i "s#LOGIN_UNICO_REVALIDACAO_CLIENT_ID#MODULO_LOGINUNICO_CIENTIDVALIDACAO#g" ConfiguracaoModLoginUnico.php
               sed -i "s#LOGIN_UNICO_REVALIDACAO_SECRET#MODULO_LOGINUNICO_SECRETVALIDACAO#g" ConfiguracaoModLoginUnico.php
-              sed -i "s#LOGIN_UNICO_REVALIDACAO_URL#MODULO_LOGINUNICO_CIENTIDVALIDACAO#g" ConfiguracaoModLoginUnico.php
+              sed -i "s#LOGIN_UNICO_REVALIDACAO_URL#MODULO_LOGINUNICO_URLREVALIDACAO#g" ConfiguracaoModLoginUnico.php
 
               rm -rf /opt/sei/web/modulos/mod-sei-loginunico.old
             fi
