@@ -565,7 +565,7 @@ if [ "$MODULO_WSSUPER_INSTALAR" == "true" ]; then
                 cp /opt/sei/web/modulos/mod-wssei/scripts/sei_atualizar_versao_modulo_wssei.php /opt/sei/scripts
 
                 echo "Vou rodar o script de atualizacao do modulo"
-                php -c /etc/php.ini /opt/sei/scripts/sei_atualizar_versao_modulo_wssei.php
+                echo -ne "$APP_DB_SEI_USERNAME\n$APP_DB_SEI_PASSWORD\n" | php -c /etc/php.ini /opt/sei/scripts/sei_atualizar_versao_modulo_wssei.php
             fi
 
             touch /sei/controlador-instalacoes/instalado-modulo-wssuper.ok
@@ -619,7 +619,7 @@ if [ "$MODULO_RESPOSTA_INSTALAR" == "true" ]; then
           files=( *.zip )
           f="${files[0]}"
 
-          mkdir temp
+          mkdir -p temp
           cd temp
           mv ../$f .
 
@@ -688,7 +688,7 @@ if [ "$MODULO_GESTAODOCUMENTAL_INSTALAR" == "true" ]; then
                 files=( *.zip )
                 f="${files[0]}"
 
-                mkdir temp
+                mkdir -p temp
                 cd temp
                 mv ../$f .
 
@@ -774,7 +774,7 @@ if [ "$MODULO_LOGINUNICO_INSTALAR" == "true" ]; then
               cp envs/mysql.env .env
               cp envs/modulo.env .modulo.env
               make clean
-              make build
+              make dist
               cd ..
               mv mod-sei-loginunico mod-sei-loginunico.old
 
@@ -783,7 +783,7 @@ if [ "$MODULO_LOGINUNICO_INSTALAR" == "true" ]; then
               files=( *.zip )
               f="${files[0]}"
 
-              mkdir temp
+              mkdir -p temp
               cd temp
               mv ../$f .
 
@@ -873,7 +873,7 @@ if [ "$MODULO_ASSINATURAVANCADA_INSTALAR" == "true" ]; then
                 files=( *.zip )
                 f="${files[0]}"
 
-                mkdir temp
+                mkdir -p temp
                 cd temp
                 mv ../$f .
 
@@ -951,7 +951,7 @@ if [ "$MODULO_PEN_INSTALAR" == "true" ]; then
                 cd dist
                 files=( *.zip )
                 f="${files[0]}"
-                mkdir temp
+                mkdir -p temp
                 cp $f temp/
                 cd temp/
                 yes | unzip $f

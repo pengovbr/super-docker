@@ -222,7 +222,7 @@ erase-conteiners-local: erase-conteiner-app-ci erase-conteiner-app-dev erase-con
 ## build-conteiner-generic: target generico para construir imagens passadas por parametro
 build-conteiner-generic: verificar-docker-registry verificar-parametro-imagemtmp-path
 		@make IMAGEMTMP=$(IMAGEMTMP) IMAGEMTMP_VERSAO=$(IMAGEMTMP_VERSAO) verificar-conteiner-imagem-rodando
-		docker build $(BUILD_ARGS) -t $(IMAGEMTMP_FULL) $(IMAGEMTMP_PATH)
+		docker build --no-cache $(BUILD_ARGS) -t $(IMAGEMTMP_FULL) $(IMAGEMTMP_PATH)
 		@if [ "$(IMAGEMTMP_VERSAO)" != "test" ]; then \
 		docker tag $(IMAGEMTMP_FULL) $(DOCKER_REGISTRY)/$(IMAGEMTMP):latest; \
 		fi;
