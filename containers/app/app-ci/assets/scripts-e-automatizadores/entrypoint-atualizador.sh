@@ -543,31 +543,46 @@ if [ "$MODULO_WSSUPER_INSTALAR" == "true" ]; then
             if [ -d "/opt/sei/web/modulos/mod-wssei" ]; then
                 echo "Ja existe um diretorio para o modulo wssei. Vamos assumir que o codigo la esteja integro"
 
-            else
-                echo "Copiando o módulo wssei"
-                cp -Rf /sei-modulos/mod-wssei /opt/sei/web/modulos/
             fi
 
+            rm -rf /opt/sei/web/modulos/mod-wssei/
+            echo "Copiando o módulo de WSSEI"
+            cp -Rf /sei-modulos/mod-wssei /opt/sei/web/modulos/
 
-            cd /opt/sei/web/modulos/mod-wssei
+            cd /opt/sei/web/modulos/mod-wssei/
             git checkout $MODULO_WSSUPER_VERSAO
             echo "Versao do WSSEI é agora: $MODULO_WSSUPER_VERSAO"
 
+            \cp envs/mysql.env .env
+            \cp envs/modulo.env .modulo.env
+            make clean
+            make dist
+            cd ..
+            mv mod-wssei mod-wssei.old
+
+            cd mod-wssei.old/dist/
+
+            files=( *.zip )
+            f="${files[0]}"
+
+            mkdir -p temp
+            cd temp
+            mv ../$f .
+
+            yes | unzip $f
+
+            yes | cp -Rf sei sip /opt/
+
             cd /opt/sei/
             sed -i "s#/\*novomodulo\*/#'MdWsSeiRest' => 'mod-wssei/', /\*novomodulo\*/#g" config/ConfiguracaoSEI.php
-            sed -i "s#/\*extramodulesconfig\*/#'WSSEI' => array('UrlServicoNotificacao' => '$MODULO_WSSUPER_URL_NOTIFICACAO', 'IdApp' => '$MODULO_WSSUPER_ID_APP', 'ChaveAutorizacao' => '$MODULO_WSSUPER_CHAVE', 'TokenSecret' => '504CE1E9-8913-488F-AB3E-EDDABC065B0B'  ), /\*extramodulesconfig\*/#g" config/ConfiguracaoSEI.php
 
+            cd /opt/sei/config/mod-wssei/
+            cp -f ConfiguracaoMdWSSEI.prod.exemplo.php ConfiguracaoMdWSSEI.php
 
-            TMPFILE=/opt/sei/web/modulos/mod-wssei/scripts/sei_atualizar_versao_modulo_wssei.php
-            if test -f "$TMPFILE"; then
+            cd /opt/sei/scripts/mod-wssei/
+            echo -ne "$APP_DB_SEI_USERNAME\n$APP_DB_SEI_PASSWORD\n" | php sei_atualizar_versao_modulo_wssei.php
 
-                # mover os scripts e executar
-                cp /opt/sei/web/modulos/mod-wssei/scripts/sei_atualizar_versao_modulo_wssei.php /opt/sei/scripts
-
-                echo "Vou rodar o script de atualizacao do modulo"
-                echo -ne "$APP_DB_SEI_USERNAME\n$APP_DB_SEI_PASSWORD\n" | php -c /etc/php.ini /opt/sei/scripts/sei_atualizar_versao_modulo_wssei.php
-            fi
-
+            rm -rf /opt/sei/web/modulos/mod-wssei.old
             touch /sei/controlador-instalacoes/instalado-modulo-wssuper.ok
 
         fi

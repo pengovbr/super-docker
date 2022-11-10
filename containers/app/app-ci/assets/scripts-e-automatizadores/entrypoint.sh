@@ -330,13 +330,8 @@ if [ "$MODULO_WSSUPER_INSTALAR" == "true" ]; then
                 cp -Rf /sei-modulos/mod-wssei /opt/sei/web/modulos/
             fi
 
-            cd /opt/sei/web/modulos/mod-wssei
-            git checkout $MODULO_WSSUPER_VERSAO
-            echo "Versao do WSSUPER eh agora: $MODULO_WSSUPER_VERSAO"
-
             cd /opt/sei/
             sed -i "s#/\*novomodulo\*/#'MdWsSeiRest' => 'mod-wssei/', /\*novomodulo\*/#g" config/ConfiguracaoSEI.php
-            sed -i "s#/\*extramodulesconfig\*/#'WSSEI' => array('UrlServicoNotificacao' => '$MODULO_WSSUPER_URL_NOTIFICACAO', 'IdApp' => '$MODULO_WSSUPER_ID_APP', 'ChaveAutorizacao' => '$MODULO_WSSUPER_CHAVE', 'TokenSecret' => '504CE1E9-8913-488F-AB3E-EDDABC065B0B'  ), /\*extramodulesconfig\*/#g" config/ConfiguracaoSEI.php
 
         fi
 
