@@ -574,11 +574,15 @@ if [ "$MODULO_WSSUPER_INSTALAR" == "true" ]; then
             yes | cp -Rf sei sip /opt/
 
             cd /opt/sei/
-            sed -i "s#/\*novomodulo\*/#'MdWsSeiRest' => 'mod-wssei/', /\*novomodulo\*/#g" config/ConfiguracaoSEI.php
+            sed -i "s#/\*novomodulo\*/#'MdWsSeiRest' => 'wssei/', /\*novomodulo\*/#g" config/ConfiguracaoSEI.php
 
             cd /opt/sei/config/mod-wssei/
-            cp -f ConfiguracaoMdWSSEI.prod.exemplo.php ConfiguracaoMdWSSEI.php
-
+            cp -f /opt/sei/web/modulos/mod-wssei.old/src/config/ConfiguracaoMdWSSEI.php .
+            sed -i "s#MOD_WSSEI_URL_SERVICO_NOTIFICACAO#MODULO_WSSUPER_URL_NOTIFICACAO#g" ConfiguracaoMdWSSEI.php
+            sed -i "s#MOD_WSSEI_ID_APP#MODULO_WSSUPER_ID_APP#g" ConfiguracaoMdWSSEI.php
+            sed -i "s#MOD_WSSEI_CHAVE_AUTORIZACAO#MODULO_WSSUPER_CHAVE#g" ConfiguracaoMdWSSEI.php
+            sed -i "s#MOD_WSSEI_TOKEN_SECRET#MODULO_WSSUPER_TOKEN_SECRET#g" ConfiguracaoMdWSSEI.php
+            
             cd /opt/sei/scripts/mod-wssei/
             echo -ne "$APP_DB_SEI_USERNAME\n$APP_DB_SEI_PASSWORD\n" | php sei_atualizar_versao_modulo_wssei.php
 

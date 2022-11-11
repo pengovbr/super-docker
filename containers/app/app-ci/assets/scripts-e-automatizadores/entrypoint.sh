@@ -331,7 +331,14 @@ if [ "$MODULO_WSSUPER_INSTALAR" == "true" ]; then
             fi
 
             cd /opt/sei/
-            sed -i "s#/\*novomodulo\*/#'MdWsSeiRest' => 'mod-wssei/', /\*novomodulo\*/#g" config/ConfiguracaoSEI.php
+            sed -i "s#/\*novomodulo\*/#'MdWsSeiRest' => 'wssei/', /\*novomodulo\*/#g" config/ConfiguracaoSEI.php
+            
+            cd /opt/sei/config/mod-wssei/
+            cp -f /opt/sei/web/modulos/mod-wssei/src/config/ConfiguracaoMdWSSEI.php .
+            sed -i "s#MOD_WSSEI_URL_SERVICO_NOTIFICACAO#MODULO_WSSUPER_URL_NOTIFICACAO#g" ConfiguracaoMdWSSEI.php
+            sed -i "s#MOD_WSSEI_ID_APP#MODULO_WSSUPER_ID_APP#g" ConfiguracaoMdWSSEI.php
+            sed -i "s#MOD_WSSEI_CHAVE_AUTORIZACAO#MODULO_WSSUPER_CHAVE#g" ConfiguracaoMdWSSEI.php
+            sed -i "s#MOD_WSSEI_TOKEN_SECRET#MODULO_WSSUPER_TOKEN_SECRET#g" ConfiguracaoMdWSSEI.php
 
         fi
 
