@@ -54,5 +54,21 @@ COPY assets/sei.conf /etc/apache2/conf.d/
 
 RUN apk add --no-cache openjdk8
 
+RUN apk add curl && \
+    curl -O https://download.microsoft.com/download/e/4/e/e4e67866-dffd-428c-aac7-8d28ddafb39b/msodbcsql17_17.6.1.1-1_amd64.apk && \
+    curl -O https://download.microsoft.com/download/e/4/e/e4e67866-dffd-428c-aac7-8d28ddafb39b/mssql-tools_17.6.1.1-1_amd64.apk && \
+    apk add --allow-untrusted msodbcsql17_17.6.1.1-1_amd64.apk && \
+    apk add --allow-untrusted mssql-tools_17.6.1.1-1_amd64.apk && \
+    ln -sfnv /opt/mssql-tools/bin/* /usr/bin && \
+    PECL_DEPS='unixodbc-dev php7-dev m4 perl autoconf dpkg dpkg-dev libmagic file binutils isl libgomp libatomic libgphobos mpfr4 mpc1 gcc musl-dev libc-dev g++ make re2c' && \
+    apk add --no-cache $PECL_DEPS && \
+    pecl install sqlsrv && \
+    pecl install pdo_sqlsrv && \
+    apk del $PECL_DEPS curl
+
+RUN echo extension=pdo_sqlsrv.so >> `php --ini | grep "Scan for additional .ini files" | sed -e "s|.*:\s*||"`/10_pdo_sqlsrv.ini
+
+RUN echo extension=sqlsrv.so >> `php --ini | grep "Scan for additional .ini files" | sed -e "s|.*:\s*||"`/20_sqlsrv.ini
+
 EXPOSE 80
 CMD ["httpd", "-DFOREGROUND"]
