@@ -106,7 +106,13 @@ fi
 
 if [ "$IMAGEM_APP_PACOTESQLSERVER_PRESENTE" == "true" ]; then
 
-    yum install -y freetds freetds-devel php-mssql
+    # Instalação dos componentes de conexão do SQL Server
+    curl https://packages.microsoft.com/config/rhel/7/prod.repo > /etc/yum.repos.d/mssql-release.repo
+    ACCEPT_EULA=Y yum install -y msodbcsql17
+    yum install -y libodbc1 unixODBC unixODBC-devel php-mssql php-pdo
+    pecl install sqlsrv pdo_sqlsrv
+    printf "; priority=20\nextension=sqlsrv.so\n" > /etc/php.d/20-sqlsrv.ini
+    printf "; priority=30\nextension=pdo_sqlsrv.so\n" > /etc/php.d/30-pdo_sqlsrv.ini
 
 fi
 
