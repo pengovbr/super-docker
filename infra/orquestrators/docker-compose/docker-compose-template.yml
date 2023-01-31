@@ -129,8 +129,6 @@ services:
         volumes_from:
             - storage-app
             - storage-certs
-        volumes:
-            - /sei/controlador-instalacoes
         labels:
             io.rancher.container.pull_image: always
             io.rancher.container.start_once: 'true'
