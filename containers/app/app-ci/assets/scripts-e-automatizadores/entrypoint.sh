@@ -112,6 +112,10 @@ do
     sleep 5 
 done
 
+# Ver issue #19
+if [ "$DATABASE_TYPE" = "SqlServer" ]; then
+    ln -s /opt2/microsoft /opt/microsoft
+fi
 
 set +e
 

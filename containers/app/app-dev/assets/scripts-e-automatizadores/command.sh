@@ -41,6 +41,11 @@ SIP_DATABASE_NAME=${SIP_DATABASE_NAME:-"sip"}
 SIP_DATABASE_USER=${SIP_DATABASE_USER:-"root"}
 SIP_DATABASE_PASSWORD=${SIP_DATABASE_PASSWORD:-"P@ssword"}
 
+# Ver issue #19
+if [ "$APP_DB_TIPO" = "SqlServer" ]; then
+    ln -s /opt2/microsoft /opt/microsoft
+fi
+
 # Atualizar os endereços de host definidos para na inicialização e sincronização de sequências
 php -r "
     require_once '/opt/sip/web/Sip.php';    

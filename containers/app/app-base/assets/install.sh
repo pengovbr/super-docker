@@ -114,6 +114,11 @@ if [ "$IMAGEM_APP_PACOTESQLSERVER_PRESENTE" == "true" ]; then
     printf "; priority=20\nextension=sqlsrv.so\n" > /etc/php.d/20-sqlsrv.ini
     printf "; priority=30\nextension=pdo_sqlsrv.so\n" > /etc/php.d/30-pdo_sqlsrv.ini
 
+    # Ver issue #19
+    mkdir /opt2
+    mv /opt/microsoft /opt2
+    ln -s /opt2/microsoft /opt/microsoft
+
 fi
 
 if [ "$IMAGEM_APP_PACOTEORACLE_PRESENTE" == "true" ]; then

@@ -21,6 +21,6 @@ ADD ${GIT_DB_REF}/oracle/v4.0.x.1/sei_super_4.0.x.1_BD_Ref_Exec.dmp \
     assets/sei-config.sql \
     assets/sip-config.sql \
     assets/install.sh \
-    /tmp
+    /tmp/
 
 RUN bash /tmp/install.sh

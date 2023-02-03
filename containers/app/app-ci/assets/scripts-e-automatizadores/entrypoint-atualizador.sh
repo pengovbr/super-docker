@@ -134,6 +134,10 @@ mkdir -p /opt/sip/temp
 chmod -R 777 /opt/sei/temp
 chmod -R 777 /opt/sip/temp
 
+# Ver issue #19
+if [ "$APP_DB_TIPO" = "SqlServer" ]; then
+    ln -s /opt2/microsoft /opt/microsoft
+fi
 
 set +e
 
