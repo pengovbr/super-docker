@@ -1024,6 +1024,57 @@ else
 
 fi
 
+echo "*****************************************************"
+echo "*****************************************************"
+echo "*INICIANDO CONFIGURACOES DO MODULO DE PETICIONAMENTO*"
+echo "*****************************************************"
+echo "*****************************************************"
+
+if [ "$MODULO_PETICIONAMENTO_INSTALAR" == "true" ]; then
+
+    if [ -f /sei/controlador-instalacoes/instalado-modulo-peticionamento.ok ]; then
+
+        if [ -z "$MODULO_PETICIONAMENTO_VERSAO" ] || \
+           [ -z "$MODULO_PETICIONAMENTO_URL" ]; then
+            echo "Informe as seguinte variaveis de ambiente no container:"
+            echo "MODULO_PETICIONAMENTO_VERSAO, MODULO_PETICIONAMENTO_URL"
+
+        else
+
+            echo "Verificando existencia do modulo de PETICIONAMENTO"
+            if [ -d "/opt/sei/web/modulos/peticionamento" ]; then
+                echo "Ja existe um diretorio para o modulo de PETICIONAMENTO. Vamos assumir que o codigo la esteja integro"
+
+            else
+                echo "Copiando o modulo de PETICIONAMENTO"
+                cp -Rf /sei-modulos/peticionamento/sei /opt/sei
+                cp -Rf /sei-modulos/peticionamento/sip /opt/sip
+            fi
+
+            cd /opt/sei/
+
+            sed -i "s#/\*novomodulo\*/#'PeticionamentoIntegracao' => 'peticionamento', /\*novomodulo\*/#g" config/ConfiguracaoSEI.php
+
+            cd /opt
+            echo -ne "$APP_DB_SIP_USERNAME\n$APP_DB_SIP_PASSWORD\n" | php sip/scripts/peticionamento/sip_atualizar_versao_modulo_peticionamento.php
+            echo -ne "$APP_DB_SEI_USERNAME\n$APP_DB_SEI_PASSWORD\n" | php sei/scripts/peticionamento/sei_atualizar_versao_modulo_peticionamento.php
+
+            touch /sei/controlador-instalacoes/instalado-modulo-peticionamento.ok
+
+        fi
+
+    else
+
+        echo "Arquivo de controle do Modulo de peticionamento encontrado, provavelmente ja foi instalado, pulando configuracao do modulo"
+
+    fi
+
+else
+
+    echo "Variavel MODULO_PETICIONAMENTO_INSTALAR nao setada para true, pulando configuracao..."
+
+fi
+
 
 
 touch /sei/controlador-instalacoes/instalado.ok

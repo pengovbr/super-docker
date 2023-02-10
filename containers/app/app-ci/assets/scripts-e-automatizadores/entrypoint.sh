@@ -750,6 +750,308 @@ else
 
 fi
 
+echo "*****************************************************"
+echo "*****************************************************"
+echo "*INICIANDO CONFIGURACOES DO MODULO DE PETICIONAMENTO*"
+echo "*****************************************************"
+echo "*****************************************************"
+
+if [ "$MODULO_PETICIONAMENTO_INSTALAR" == "true" ]; then
+
+    if [ -f /sei/controlador-instalacoes/instalado-modulo-peticionamento.ok ]; then
+
+        if [ -z "$MODULO_PETICIONAMENTO_VERSAO" ] || \
+           [ -z "$MODULO_PETICIONAMENTO_URL" ]; then
+            echo "Informe as seguinte variaveis de ambiente no container:"
+            echo "MODULO_PETICIONAMENTO_VERSAO, MODULO_PETICIONAMENTO_URL"
+
+        else
+
+            echo "Verificando existencia do modulo de PETICIONAMENTO"
+            if [ -d "/opt/sei/web/modulos/peticionamento" ]; then
+                echo "Ja existe um diretorio para o modulo de PETICIONAMENTO. Vamos assumir que o codigo la esteja integro"
+
+            else
+                echo "Copiando o modulo de PETICIONAMENTO"
+                cp -Rf /sei-modulos/peticionamento/sei /opt/sei
+                cp -Rf /sei-modulos/peticionamento/sip /opt/sip
+            fi
+
+            cd /opt/sei/
+
+            sed -i "s#/\*novomodulo\*/#'PeticionamentoIntegracao' => 'peticionamento', /\*novomodulo\*/#g" config/ConfiguracaoSEI.php
+
+        fi
+
+    else
+
+        echo "Arquivo de controle do Modulo de peticionamento encontrado, provavelmente ja foi instalado, pulando configuracao do modulo"
+
+    fi
+
+else
+
+    echo "Variavel MODULO_PETICIONAMENTO_INSTALAR nao setada para true, pulando configuracao..."
+
+fi
+
+#!/bin/bash
+
+# ENVIRONMENT VARIABLES
+# $APP_PROTOCOLO
+# $APP_HOST
+# $APP_ORGAO
+# $APP_ORGAO_DESCRICAO
+# $APP_NOMECOMPLEMENTO
+# $APP_DB_TIPO
+# $APP_DB_PORTA
+# $APP_DB_SIP_USERNAME
+# $APP_DB_SIP_PASSWORD
+# $APP_DB_SEI_USERNAME
+# $APP_DB_SEI_PASSWORD
+# $APP_DB_ROOT_USERNAME
+# $APP_DB_ROOT_PASSWORD
+
+set -e
+
+if [ -z "$APP_PROTOCOLO" ] || \
+   [ -z "$APP_HOST" ] || \
+   [ -z "$APP_ORGAO" ] || \
+   [ -z "$APP_ORGAO_DESCRICAO" ] || \
+   [ -z "$APP_NOMECOMPLEMENTO" ] || \
+   [ -z "$APP_DB_TIPO" ] || \
+   [ -z "$APP_DB_PORTA" ] || \
+   [ -z "$APP_DB_SEI_BASE" ] || \
+   [ -z "$APP_DB_SIP_BASE" ] || \
+   [ -z "$APP_DB_SIP_USERNAME" ] || \
+   [ -z "$APP_DB_SIP_PASSWORD" ] || \
+   [ -z "$APP_DB_SEI_USERNAME" ] || \
+   [ -z "$APP_DB_SEI_PASSWORD" ] || \
+   [ -z "$APP_DB_ROOT_USERNAME" ] || \
+   [ -z "$APP_DB_ROOT_PASSWORD" ]; then
+    echo "Informe as seguinte variaveis de ambiente no seu docker-compose ou no container:"
+    echo "APP_PROTOCOLO=$APP_PROTOCOLO"
+    echo "APP_HOST=$APP_HOST"
+    echo "APP_ORGAO=$APP_ORGAO"
+    echo "APP_ORGAO_DESCRICAO=$APP_ORGAO_DESCRICAO"
+    echo "APP_NOMECOMPLEMENTO=$APP_NOMECOMPLEMENTO"
+    echo "APP_DB_TIPO=$APP_DB_TIPO (deve ser MySql, Sqlserver ou Oracle)"
+    echo "APP_DB_PORTA=$APP_DB_PORTA"
+    echo "APP_DB_SIP_BASE=$APP_DB_SIP_BASE"
+    echo "APP_DB_SEI_BASE=$APP_DB_SEI_BASE"
+    echo "APP_DB_SIP_USERNAME=$APP_DB_SIP_USERNAME"
+    echo "APP_DB_SIP_PASSWORD=$APP_DB_SIP_PASSWORD"
+    echo "APP_DB_SEI_USERNAME=$APP_DB_SEI_USERNAME"
+    echo "APP_DB_SEI_PASSWORD=$APP_DB_SEI_PASSWORD"
+    echo "APP_DB_ROOT_USERNAME=$APP_DB_ROOT_USERNAME"
+    echo "APP_DB_ROOT_PASSWORD=$APP_DB_ROOT_PASSWORD"
+
+    exit 1
+fi
+
+
+echo "***************************************************"
+echo "***************************************************"
+echo "**INICIANDO CONFIGURACOES BASICAS DO APACHE E SEI**"
+echo "***************************************************"
+echo "***************************************************"
+
+while [ ! -f /sei/controlador-instalacoes/instalado.ok ]
+do
+    echo "Aguardando conteiner atualizador instalar e atualizar o SEI e modulos"
+    sleep 5
+done
+
+APP_HOST_URL=$APP_PROTOCOLO://$APP_HOST
+
+echo "127.0.0.1 $APP_HOST" >> /etc/hosts
+
+# Direciona logs para saida padrao para utilizar docker logs
+ln -sf /dev/stdout /var/log/httpd/access_log
+ln -sf /dev/stdout /var/log/httpd/ssl_access_log
+ln -sf /dev/stdout /var/log/httpd/ssl_request_log
+ln -sf /dev/stderr /var/log/httpd/error_log
+ln -sf /dev/stderr /var/log/httpd/ssl_error_log
+
+# vefificar se existe codigo fonte
+if [ ! -f /opt/sei/web/SEI.php ] || [ ! -f /opt/sip/web/Sip.php ] ; then
+  echo "Codigo fonte do sei  ou sip nao encontrado ou sem permissao. Abandonando subida..."
+  sleep 10
+  exit 1
+fi
+
+# verificar se config esta correto
+
+if [ ! -f /opt/sei/config/ConfiguracaoSEI.php ]; then
+    \cp -r /sei/files/conf/ConfiguracaoSEI.php /opt/sei/config/
+fi
+
+if [ ! -f /opt/sip/config/ConfiguracaoSip.php ]; then
+    \cp -r /sei/files/conf/ConfiguracaoSip.php /opt/sip/config/
+fi
+
+cp -f /opt/sei/config/ConfiguracaoSEI.php /opt/sei/config/ConfiguracaoSEI.php.$(date '+%Y-%m-%d_%H-%M-%S')
+cp -f /opt/sip/config/ConfiguracaoSip.php /opt/sip/config/ConfiguracaoSip.php.$(date '+%Y-%m-%d_%H-%M-%S')
+
+
+# Ajustes de permissoes diversos para desenvolvimento do SEI
+chmod +x /opt/sei/bin/pdfboxmerge.jar
+mkdir -p /opt/sei/temp
+mkdir -p /opt/sip/temp
+chmod -R 777 /opt/sei/temp
+chmod -R 777 /opt/sip/temp
+
+
+
+while [ ! -f /sei/controlador-instalacoes/instalado.ok ]
+do
+    echo "Aguardando conteiner atualizador instalar e atualizar o SEI e modulos"
+    sleep 5 
+done
+
+# Ver issue #19
+if [ "$DATABASE_TYPE" = "SqlServer" ]; then
+    ln -s /opt2/microsoft /opt/microsoft
+fi
+
+set +e
+
+RET=1
+while [ ! "$RET" == "0" ]
+do
+    echo ""
+    echo "Esperando a base de dados ficar disponivel... Vamos tentar chama-la ...."
+
+    php -r "
+    require_once '/opt/sip/web/Sip.php';    
+    \$conexao = BancoSip::getInstance();
+    \$conexao->abrirConexao();
+    \$conexao->executarSql('select sigla from sistema');"
+    
+    RET=$?
+    sleep 3
+    
+done  
+
+set -e
+
+echo "***************************************************"
+echo "***************************************************"
+echo "UPDATE NA BASE DE DADOS - ORGAO E SISTEMA**********"
+echo "***************************************************"
+echo "***************************************************"
+
+# Atualizacao do endereco de host da aplicacao
+echo "Atualizando Banco de Dados com as Configuracoes Iniciais..."
+if [ "$APP_DB_TIPO" == "MySql" ]; then
+    echo "Atualizando MySql..."
+    MYSQL_CMD="mysql --host $APP_DB_HOST --user $APP_DB_ROOT_USERNAME --password=$APP_DB_ROOT_PASSWORD"
+    $MYSQL_CMD -e "update orgao set sigla='$APP_ORGAO', descricao='$APP_ORGAO_DESCRICAO';" sip
+    $MYSQL_CMD -e "update orgao set sigla='$APP_ORGAO', descricao='$APP_ORGAO_DESCRICAO';" sei
+    $MYSQL_CMD -e "update sistema set pagina_inicial='$APP_HOST_URL/sip' where sigla='SIP';" sip
+    $MYSQL_CMD -e "update sistema set pagina_inicial='$APP_HOST_URL/sei/inicializar.php', web_service='$APP_HOST_URL/sei/controlador_ws.php?servico=sip' where sigla='SEI';" sip
+fi
+
+if [ "$APP_DB_TIPO" == "Oracle" ]; then
+    echo "Atualizando Oracle..."
+    echo "alter user sip identified by sip_user;" | sqlplus64 $APP_DB_ROOT_USERNAME/$APP_DB_ROOT_PASSWORD@$APP_DB_HOST
+    echo "alter user sei identified by sei_user;" | sqlplus64 $APP_DB_ROOT_USERNAME/$APP_DB_ROOT_PASSWORD@$APP_DB_HOST
+    echo "update orgao set sigla='$APP_ORGAO', descricao='$APP_ORGAO_DESCRICAO';" | sqlplus64 $APP_DB_ROOT_USERNAME/$APP_DB_ROOT_PASSWORD@$APP_DB_HOST
+    echo "update orgao set sigla='$APP_ORGAO', descricao='$APP_ORGAO_DESCRICAO';" | sqlplus64 sei/sei_user@$APP_DB_HOST
+    echo "update sistema set pagina_inicial='$APP_HOST_URL/sip' where sigla='SIP';" | sqlplus64 $APP_DB_ROOT_USERNAME/$APP_DB_ROOT_PASSWORD@$APP_DB_HOST
+    echo "update sistema set pagina_inicial='$APP_HOST_URL/sei/inicializar.php', web_service='$APP_HOST_URL/sei/controlador_ws.php?servico=sip' where sigla='SEI';" | sqlplus64 $APP_DB_ROOT_USERNAME/$APP_DB_ROOT_PASSWORD@$APP_DB_HOST
+fi
+
+if [ "$APP_DB_TIPO" == "SqlServer" ]; then
+    echo "Atualizando SqlServer..."
+    echo "use sip" > /tmp/update.tmp
+    echo "go" >> /tmp/update.tmp
+    echo "update orgao set sigla='$APP_ORGAO', descricao='$APP_ORGAO_DESCRICAO'" >> /tmp/update.tmp
+    echo "go" >> /tmp/update.tmp
+    cat /tmp/update.tmp | tsql -S $APP_DB_HOST -U $APP_DB_ROOT_USERNAME -P $APP_DB_ROOT_PASSWORD
+
+
+    echo "use sei" > /tmp/update.tmp
+    echo "go" >> /tmp/update.tmp
+    echo "update orgao set sigla='$APP_ORGAO', descricao='$APP_ORGAO_DESCRICAO'" >> /tmp/update.tmp
+    echo "go" >> /tmp/update.tmp
+    cat /tmp/update.tmp | tsql -S $APP_DB_HOST -U $APP_DB_SEI_USERNAME -P $APP_DB_SEI_PASSWORD
+
+    echo "use sip" > /tmp/update.tmp
+    echo "go" >> /tmp/update.tmp
+    echo "update sistema set pagina_inicial='$APP_HOST_URL/sip' where sigla='SIP'" >> /tmp/update.tmp
+    echo "go" >> /tmp/update.tmp
+    cat /tmp/update.tmp | tsql -S $APP_DB_HOST -U $APP_DB_ROOT_USERNAME -P $APP_DB_ROOT_PASSWORD
+
+    echo "use sip" > /tmp/update.tmp
+    echo "go" >> /tmp/update.tmp
+    echo "update sistema set pagina_inicial='$APP_HOST_URL/sei/inicializar.php', web_service='$APP_HOST_URL/sei/controlador_ws.php?servico=sip' where sigla='SEI'" >> /tmp/update.tmp
+    echo "go" >> /tmp/update.tmp
+    cat /tmp/update.tmp | tsql -S $APP_DB_HOST -U $APP_DB_ROOT_USERNAME -P $APP_DB_ROOT_PASSWORD
+fi
+
+echo "***************************************************"
+echo "***************************************************"
+echo "**GERACAO DE CERTIFICADO PARA O APACHE*************"
+echo "***************************************************"
+echo "***************************************************"
+
+# Gera certificados caso necessario para desenvolvimento
+if [ ! -d "/sei/certs/seiapp" ]; then
+    echo "Diretorio /sei/certs/seiapp nao encontrado, criando ..."
+    mkdir -p /sei/certs/seiapp
+fi
+
+echo "Verificando se certificados existem no diretorio /certs...."
+if [ ! -f /sei/certs/seiapp/sei-ca.pem ] || [ ! -f /sei/certs/seiapp/sei.crt ]; then
+    echo "Arquivos de cert nao encontrados criando auto assinados ..."
+    
+    cd /sei/certs/seiapp
+
+    echo "Criando CA"  
+    openssl genrsa -out sei-ca-key.pem 2048
+    openssl req -x509 -new -nodes -key sei-ca-key.pem \
+        -days 10000 -out sei-ca.pem -subj "/CN=sei-dev"
+    
+    echo "Criando certificados para o dominio: $APP_HOST"
+    openssl genrsa -out sei.key 2048
+    openssl req -new -nodes -key sei.key \
+        -days 10000 -out sei.csr -subj "/CN=$APP_HOST"
+    openssl x509 -req -in sei.csr -CA sei-ca.pem \
+        -CAkey sei-ca-key.pem -CAcreateserial \
+        -out sei.crt -days 10000 -extensions v3_req
+
+    cat /sei/certs/seiapp/sei-ca.pem >> /etc/ssl/certs/cacert.pem
+    echo "Adicionada nova CA ao TrustStore\n"
+else
+    echo "Arquivos de cert encontrados vamos tentar utiliza-los..."
+fi
+
+cd /sei/certs/seiapp
+cp sei.crt /etc/pki/tls/certs/sei.crt
+cp sei-ca.pem /etc/pki/tls/certs/sei-ca.pem
+cp sei.key /etc/pki/tls/private/sei.key 
+cat sei.crt sei.key >> /etc/pki/tls/certs/sei.pem
+
+echo "Incluindo TrustStore no sistema"
+#cp /icpbrasil/*.crt /etc/pki/ca-trust/source/anchors/
+cp sei-ca.pem /etc/pki/ca-trust/source/anchors/
+update-ca-trust extract
+update-ca-trust enable
+
+
+
+echo "Atualizador finalizado procedendo com a subida do apache..."
+
+#atualizar
+/usr/sbin/httpd -DFOREGROUND &
+sleep 3
+
+echo "Apache no ar"
+
+# necessario para testarmos ambientes com a data retroagida
+git config --global http.sslVerify false
+
 
 echo "***************************************************"
 echo "Entrypoint chegou ao final..."
