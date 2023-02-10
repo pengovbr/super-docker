@@ -1047,8 +1047,7 @@ if [ "$MODULO_PETICIONAMENTO_INSTALAR" == "true" ]; then
 
             else
                 echo "Copiando o modulo de PETICIONAMENTO"
-                cp -Rf /sei-modulos/peticionamento/sei /opt/sei
-                cp -Rf /sei-modulos/peticionamento/sip /opt/sip
+                cp -Rf /sei-modulos/peticionamento/* /opt
             fi
 
             cd /opt/sei/
@@ -1056,8 +1055,8 @@ if [ "$MODULO_PETICIONAMENTO_INSTALAR" == "true" ]; then
             sed -i "s#/\*novomodulo\*/#'PeticionamentoIntegracao' => 'peticionamento', /\*novomodulo\*/#g" config/ConfiguracaoSEI.php
 
             cd /opt
-            echo -ne "$APP_DB_SIP_USERNAME\n$APP_DB_SIP_PASSWORD\n" | php sip/scripts/peticionamento/sip_atualizar_versao_modulo_peticionamento.php
-            echo -ne "$APP_DB_SEI_USERNAME\n$APP_DB_SEI_PASSWORD\n" | php sei/scripts/peticionamento/sei_atualizar_versao_modulo_peticionamento.php
+            echo -ne "$APP_DB_SIP_USERNAME\n$APP_DB_SIP_PASSWORD\n" | php sip/scripts/sip_atualizar_versao_modulo_peticionamento.php
+            echo -ne "$APP_DB_SEI_USERNAME\n$APP_DB_SEI_PASSWORD\n" | php sei/scripts/sei_atualizar_versao_modulo_peticionamento.php
 
             touch /sei/controlador-instalacoes/instalado-modulo-peticionamento.ok
 
