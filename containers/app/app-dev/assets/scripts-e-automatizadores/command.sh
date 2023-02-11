@@ -42,7 +42,7 @@ SIP_DATABASE_USER=${SIP_DATABASE_USER:-"root"}
 SIP_DATABASE_PASSWORD=${SIP_DATABASE_PASSWORD:-"P@ssword"}
 
 # Ver issue #19
-if [ "$APP_DB_TIPO" = "SqlServer" ]; then
+if [ "$DATABASE_TYPE" = "SqlServer" ]; then
     ln -s /opt2/microsoft /opt/microsoft
 fi
 
