@@ -14,5 +14,5 @@ mkdir -p /sei/controlador-instalacoes/ /sei/arquivos_externos_sei/ /sei/certs
 mkdir -p /sei/files/conf /sei/files/scripts-e-automatizadores/modulos
 mv /tmp/assets/conf/ConfiguracaoSEI.php /sei/files/conf
 mv /tmp/assets/conf/ConfiguracaoSip.php /sei/files/conf
-mv /tmp/assets/scripts-e-automatizadores/openldap /sei/files/scripts-e-automatizadores/
+mv /tmp/assets/scripts-e-automatizadores/openldap /tmp/assets/scripts-e-automatizadores/misc /sei/files/scripts-e-automatizadores/
 mv /tmp/assets/scripts-e-automatizadores/modulos/* /sei/files/scripts-e-automatizadores/modulos/

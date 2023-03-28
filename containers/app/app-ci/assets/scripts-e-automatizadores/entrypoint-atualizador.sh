@@ -468,6 +468,35 @@ fi
 # necessario para testarmos ambientes com a data retroagida
 git config --global http.sslVerify false
 
+
+echo "***************************************************"
+echo "***************************************************"
+echo "*INICIANDO CONFIGURACOES DO SERVICO****************"
+echo "*PROTOCOLO DIGITAL*********************************"
+echo "***************************************************"
+
+if [ "$SERVICO_PD_INSTALAR" == "true" ]; then
+
+    if [ ! -f /sei/controlador-instalacoes/instalado-servicoPD.ok ]; then
+
+        echo "Rodando script do PD..."
+        php /sei/files/scripts-e-automatizadores/misc/enableservicePD.php
+        echo "Script do PD finalizado verifique se houve erros acima..."
+        touch /sei/controlador-instalacoes/instalado-servicoPD.ok
+
+    else
+
+        echo "Arquivo de controle do Servico do Protocolo Digital encontrado, provavelmente ja foi instalado, pulando configuracao do servico"
+
+    fi
+
+else
+
+    echo "Variavel SERVICO_PD_INSTALAR nao setada para true, pulando configuracao..."
+
+fi
+
+
 echo "***************************************************"
 echo "***************************************************"
 echo "*INICIANDO CONFIGURACOES DO MODULO DE ESTATISTICAS*"
