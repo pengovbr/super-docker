@@ -689,6 +689,11 @@ if [ "$MODULO_RESPOSTA_INSTALAR" == "true" ]; then
           cd /opt/sei/scripts/mod-sei-resposta/
           echo -ne "$APP_DB_SEI_USERNAME\n$APP_DB_SEI_PASSWORD\n" | php sei_atualizar_versao_modulo_resposta.php
 
+          if [ ! -z "$MODULO_RESPOSTA_SISTEMA_ID" ]; then
+              echo "Vamos chamar a configuracao do mod-sei-resposta"
+              php /sei/files/scripts-e-automatizadores/modulos/mod-sei-resposta/mod-sei-resposta.php
+          fi
+
           rm -rf /opt/sei/web/modulos/mod-sei-resposta.old
           touch /sei/controlador-instalacoes/instalado-modulo-resposta.ok
 
