@@ -21,6 +21,8 @@ DIR := ${CURDIR}
 COMMMADCOMPOSE = docker-compose -f orquestrators/docker-compose/docker-compose.yml 
 CMD_CURL_SUPER_LOGIN = curl -s -L -k $(APP_PROTOCOLO)://$(APP_HOST)/sei | grep "txtUsuario"
 
+kube_timeout := "180s"
+
 help:   ## Lista de comandos disponiveis e descricao. Voce pode usar TAB para completar os comandos
 	@fgrep -h "##" $(MAKEFILE_LIST) | fgrep -v fgrep | sed -e 's/\\$$//' | sed -e 's/##//'
 
@@ -458,4 +460,4 @@ kubernetes_delete: ## deletar receitas do cluster
 
 
 kubernetes_check_deploy_generic: ## verifica se determinado deploy ja esta pronto para uso no cluster
-	kubectl --insecure-skip-tls-verify wait deployment $(KUBE_DEPLOY_NAME) --for condition="Available=True" --namespace=$$KUBERNETES_NAMESPACE --timeout=180s
+	kubectl --insecure-skip-tls-verify wait deployment $(KUBE_DEPLOY_NAME) --for condition="Available=True" --namespace=$$KUBERNETES_NAMESPACE --timeout=$(kube_timeout)
