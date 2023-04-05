@@ -405,7 +405,7 @@ ifeq ("$(BALANCEADOR_PRESENTE)",  "true")
 	@echo "*****************************************************"
 	@echo "*****************************************************"
 	@$(CMDMAKE) qtd=1 scale
-	@var=$$(echo $$(docker ps | grep app | wc -l)) \
+	@var=$$(echo $$(docker ps | grep "app-ci:" | wc -l)) \
 	&& \
 	if [ "$$var" = "1" ]; then \
 	echo 'Unico app encontrado.'; \
@@ -459,7 +459,7 @@ ifeq ("$(BALANCEADOR_PRESENTE)",  "true")
 	@echo "*****************************************************"
 	@echo "*****************************************************"
 	@$(CMDMAKE) qtd=1 scale
-	@var=$$(echo $$(docker ps | grep app | wc -l)) \
+	@var=$$(echo $$(docker ps | grep "app-ci:" | wc -l)) \
 	&& \
 	if [ "$$var" = "1" ]; then \
 	echo 'Unico app encontrado.'; \

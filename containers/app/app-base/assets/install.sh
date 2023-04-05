@@ -109,8 +109,9 @@ if [ "$IMAGEM_APP_PACOTESQLSERVER_PRESENTE" == "true" ]; then
     # Instalação dos componentes de conexão do SQL Server
     curl https://packages.microsoft.com/config/rhel/7/prod.repo > /etc/yum.repos.d/mssql-release.repo
     ACCEPT_EULA=Y yum install -y msodbcsql17
-    yum install -y libodbc1 unixODBC unixODBC-devel php-mssql php-pdo
-    pecl install sqlsrv pdo_sqlsrv
+    yum install -y libtool-ltdl-devel libodbc1 unixODBC unixODBC-devel php-mssql php-pdo
+    pecl channel-update pecl.php.net
+    pecl install sqlsrv-5.10.1 pdo_sqlsrv-5.10.1
     printf "; priority=20\nextension=sqlsrv.so\n" > /etc/php.d/20-sqlsrv.ini
     printf "; priority=30\nextension=pdo_sqlsrv.so\n" > /etc/php.d/30-pdo_sqlsrv.ini
 
