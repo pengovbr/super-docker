@@ -21,6 +21,7 @@ DIR := ${CURDIR}
 COMMMADCOMPOSE = docker-compose -f orquestrators/docker-compose/docker-compose.yml 
 CMD_CURL_SUPER_LOGIN = curl -s -L -k $(APP_PROTOCOLO)://$(APP_HOST)/sei | grep "txtUsuario"
 
+check_isalive-timeout := "37"
 kube_timeout := "180s"
 
 help:   ## Lista de comandos disponiveis e descricao. Voce pode usar TAB para completar os comandos
@@ -29,7 +30,7 @@ help:   ## Lista de comandos disponiveis e descricao. Voce pode usar TAB para co
 
 check-super-isalive: ## Target de apoio. Acessa o Super e verifica se esta respondendo a tela de login
 	@echo "Vamos tentar acessar a pagina de login do SUPER, vamos aguardar ate 95 segs."
-	@for number in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37; do \
+	@for number in $$(seq 1 $(check_isalive-timeout)); do \
 	    echo 'Tentando acessar...'; var=$$(echo $$($(CMD_CURL_SUPER_LOGIN))); \
 			if [ "$$var" != "" ]; then \
 					echo 'Pagina respondeu com tela de login' ; \
