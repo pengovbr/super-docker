@@ -739,6 +739,9 @@ if [ "$MODULO_PEN_INSTALAR" = "true" ] && [ ! -z "$MODULO_PEN_GEARMAN_IP" ]; the
     sed -i "s#\"Servidor\" => \"\"#'Servidor' => \"$MODULO_PEN_GEARMAN_IP\"#g" /opt/sei/config/mod-pen/ConfiguracaoModPEN.php
     sed -i "s#\"Porta\" => \"\"#'Porta' => \"$MODULO_PEN_GEARMAN_PORTA\"#g" /opt/sei/config/mod-pen/ConfiguracaoModPEN.php
     
+    WORKERS=${MODULO_PEN_QTD_WORKER_PROC:-1}
+    sed "s#<<MODULO_PEN_QTD_WORKER_PROC>>#$WORKERS#g" /etc/supervisor/supervisor.ini.template > /etc/supervisor/supervisor.ini
+
     #Inicializando geramand e supervisord para o Modulo Barramento PEN
     gearmand -d -l /proc/1/fd/1
     supervisord
