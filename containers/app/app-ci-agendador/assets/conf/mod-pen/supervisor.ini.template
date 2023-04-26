@@ -20,7 +20,7 @@ stderr_events_enabled=true
 command=/usr/bin/php -c /etc/php.ini /opt/sei/scripts/mod-pen/ProcessamentoTarefasPEN.php --worker=%(process_num)02d
 directory=/opt/sei/web
 process_name=%(program_name)s_%(process_num)02d
-numprocs=4
+numprocs=<<MODULO_PEN_QTD_WORKER_PROC>>
 user=root
 autostart=true
 autorestart=true
