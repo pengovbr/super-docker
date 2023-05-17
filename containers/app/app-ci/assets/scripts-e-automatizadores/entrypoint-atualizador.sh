@@ -517,8 +517,10 @@ if [ "$MODULO_ESTATISTICAS_INSTALAR" == "true" ]; then
         else
             echo "Sincronizando nova versão do módulo de estatísticas"
 
-            rm -rf /opt/sei/web/modulos/mod-sei-estatisticas/
-            git clone https://github.com/supergovbr/mod-sei-estatisticas.git /opt/sei/web/modulos/mod-sei-estatisticas/
+            cd /sei-modulos/mod-sei-estatisticas
+            git pull
+
+            cp -Rf /sei-modulos/mod-sei-estatisticas /opt/sei/web/modulos/
 
             cd /opt/sei/web/modulos/mod-sei-estatisticas
             git checkout $MODULO_ESTATISTICAS_VERSAO
@@ -569,8 +571,10 @@ if [ "$MODULO_WSSUPER_INSTALAR" == "true" ]; then
 
             echo "Sincronizando nova versão do módulo de WSSEI"
             rm -rf /opt/sei/web/modulos/mod-wssei/
-            git clone https://github.com/supergovbr/mod-wssei.git /opt/sei/web/modulos/mod-wssei/
+            cd /sei-modulos/mod-wssei
+            git pull
 
+            cp -Rf /sei-modulos/mod-wssei /opt/sei/web/modulos/
             cd /opt/sei/web/modulos/mod-wssei/
             git checkout $MODULO_WSSUPER_VERSAO
             echo "Versao do WSSEI é agora: $MODULO_WSSUPER_VERSAO"
@@ -642,8 +646,10 @@ if [ "$MODULO_RESPOSTA_INSTALAR" == "true" ]; then
 
           echo "Sincronizando nova versão do módulo de resposta"
           rm -rf /opt/sei/web/modulos/mod-sei-resposta/
-          git clone https://github.com/supergovbr/mod-sei-resposta.git /opt/sei/web/modulos/mod-sei-resposta/
+          cd /sei-modulos/mod-sei-resposta
+          git pull
 
+          cp -Rf /sei-modulos/mod-sei-resposta /opt/sei/web/modulos/
           cd /opt/sei/web/modulos/mod-sei-resposta/
           git checkout $MODULO_RESPOSTA_VERSAO
           echo "Versao do Resposta é agora: $MODULO_RESPOSTA_VERSAO"
@@ -985,8 +991,12 @@ if [ "$MODULO_PEN_INSTALAR" == "true" ]; then
 
                 echo "Sincronizando nova versão do módulo pen"
                 rm -rf /opt/sei/web/modulos/mod-sei-pen /opt/sei/web/modulos/pen
+
+                cd /sei-modulos/mod-sei-pen
+                git pull
+
                 cd /opt/sei/web/modulos
-                git clone https://github.com/supergovbr/mod-sei-pen.git /opt/sei/web/modulos/mod-sei-pen/
+                cp -R /sei-modulos/mod-sei-pen mod-sei-pen
 
                 cd mod-sei-pen
                 git checkout $MODULO_PEN_VERSAO
