@@ -515,15 +515,12 @@ if [ "$MODULO_ESTATISTICAS_INSTALAR" == "true" ]; then
             echo "MODULO_ESTATISTICAS_VERSAO, MODULO_ESTATISTICAS_URL, MODULO_ESTATISTICAS_SIGLA, MODULO_ESTATISTICAS_CHAVE"
 
         else
+            echo "Sincronizando nova versão do módulo de estatísticas"
 
-            echo "Verificando existencia do modulo de estatisticas"
-            if [ -d "/opt/sei/web/modulos/mod-sei-estatisticas" ]; then
-                echo "Ja existe um diretorio para o modulo de estatisticas. Vamos assumir que o codigo la esteja integro"
+            cd /sei-modulos/mod-sei-estatisticas
+            git pull
 
-            else
-                echo "Copiando o módulo de estatísticas"
-                cp -Rf /sei-modulos/mod-sei-estatisticas /opt/sei/web/modulos/
-            fi
+            cp -Rf /sei-modulos/mod-sei-estatisticas /opt/sei/web/modulos/
 
             cd /opt/sei/web/modulos/mod-sei-estatisticas
             git checkout $MODULO_ESTATISTICAS_VERSAO
@@ -572,16 +569,12 @@ if [ "$MODULO_WSSUPER_INSTALAR" == "true" ]; then
 
         else
 
-            echo "Verificando existencia do modulo wssuper"
-            if [ -d "/opt/sei/web/modulos/mod-wssei" ]; then
-                echo "Ja existe um diretorio para o modulo wssei. Vamos assumir que o codigo la esteja integro"
-
-            fi
-
+            echo "Sincronizando nova versão do módulo de WSSEI"
             rm -rf /opt/sei/web/modulos/mod-wssei/
-            echo "Copiando o módulo de WSSEI"
-            cp -Rf /sei-modulos/mod-wssei /opt/sei/web/modulos/
+            cd /sei-modulos/mod-wssei
+            git pull
 
+            cp -Rf /sei-modulos/mod-wssei /opt/sei/web/modulos/
             cd /opt/sei/web/modulos/mod-wssei/
             git checkout $MODULO_WSSUPER_VERSAO
             echo "Versao do WSSEI é agora: $MODULO_WSSUPER_VERSAO"
@@ -651,10 +644,12 @@ if [ "$MODULO_RESPOSTA_INSTALAR" == "true" ]; then
 
         else
 
+          echo "Sincronizando nova versão do módulo de resposta"
           rm -rf /opt/sei/web/modulos/mod-sei-resposta/
-          echo "Copiando o módulo de resposta"
-          cp -Rf /sei-modulos/mod-sei-resposta /opt/sei/web/modulos/
+          cd /sei-modulos/mod-sei-resposta
+          git pull
 
+          cp -Rf /sei-modulos/mod-sei-resposta /opt/sei/web/modulos/
           cd /opt/sei/web/modulos/mod-sei-resposta/
           git checkout $MODULO_RESPOSTA_VERSAO
           echo "Versao do Resposta é agora: $MODULO_RESPOSTA_VERSAO"
@@ -994,11 +989,15 @@ if [ "$MODULO_PEN_INSTALAR" == "true" ]; then
 
         else
 
-                echo "Buildando o módulo do pen"
-
+                echo "Sincronizando nova versão do módulo pen"
                 rm -rf /opt/sei/web/modulos/mod-sei-pen /opt/sei/web/modulos/pen
+
+                cd /sei-modulos/mod-sei-pen
+                git pull
+
                 cd /opt/sei/web/modulos
                 cp -R /sei-modulos/mod-sei-pen mod-sei-pen
+
                 cd mod-sei-pen
                 git checkout $MODULO_PEN_VERSAO
                 echo "Versao do PEN agora: $MODULO_PEN_VERSAO"
