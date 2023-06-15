@@ -68,5 +68,7 @@ php -r "
     \$objScriptRN->atualizarSequencias();
 " || exit 1
 
+# Apaga o PID antes de reinicar o servidor
+rm -f /run/httpd/httpd.pid
 # Inicialização do servidor web
 /usr/sbin/httpd -DFOREGROUND
