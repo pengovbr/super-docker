@@ -726,6 +726,7 @@ if [ "$MODULO_GESTAODOCUMENTAL_INSTALAR" == "true" ]; then
                 cp -Rf /sei-modulos/mod-gestao-documental /opt/sei/web/modulos/
 
                 cd /opt/sei/web/modulos/mod-gestao-documental/
+		git pull
 
                 git checkout $MODULO_GESTAODOCUMENTAL_VERSAO
                 echo "Versao do Gestao Documental eh agora: $MODULO_GESTAODOCUMENTAL_VERSAO"
