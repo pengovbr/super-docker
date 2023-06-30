@@ -24,7 +24,12 @@ yum -y install \
     cabextract \
     xorg-x11-font-utils \
     xorg-x11-fonts-75dpi \
-    fontconfig
+    fontconfig \
+    mod_ssl
+
+openssl req -newkey rsa:2048 -nodes -keyout /etc/pki/tls/private/localhost.key -x509 -days 365 -out /etc/pki/tls/certs/localhost.crt \
+  -subj "/C=BR/ST=Brasilia/L=Brasilia/O=TESTE/OU=MGI/CN=localhost"
+
 
 # Instalação do PHP e demais extenções necessárias para o projeto
 yum install -y yum-utils dnf-plugins-core
