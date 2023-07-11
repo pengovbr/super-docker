@@ -54,6 +54,10 @@ verificar-imagem-base-centos: ## target de apoio para verificar se a imagem base
 		@if [ -z "$(IMAGEM_BASE_CENTOS)" ]; then echo "Var IMAGEM_BASE_CENTOS nao definida"; make envcontainers.env; fi
 		@if [ -z "$(IMAGEM_BASE_CENTOS_VERSAO)" ]; then echo "Var IMAGEM_BASE_CENTOS_VERSAO nao definida"; exit 1; fi
 
+verificar-imagem-base-rockylinux: ## target de apoio para verificar se a imagem base do Rockylinux foi informada
+		@if [ -z "$(IMAGEM_BASE_ROCKYLINUX)" ]; then echo "Var IMAGEM_BASE_ROCKYLINUX nao definida"; make envcontainers.env; fi
+		@if [ -z "$(IMAGEM_BASE_ROCKYLINUX_VERSAO)" ]; then echo "Var IMAGEM_BASE_ROCKYLINUX_VERSAO nao definida"; exit 1; fi
+
 
 verificar-imagem-base-mariadb: ## target de apoio para verificar se a imagem base do mariadb foi informada
 		@if [ -z "$(IMAGEM_BASE_MARIADB)" ]; then echo "Var IMAGEM_BASE_MARIADB nao definida"; make envcontainers.env; fi
@@ -132,6 +136,8 @@ erase-conteiner-generic: verificar-conteiner-imagem-rodando
 erase-conteiner-base-centos: ## apagar a imagem base-centos
 		@make IMAGEMTMP=base-centos7 IMAGEMTMP_VERSAO=$(DOCKER_CONTAINER_VERSAO_PRODUTO) erase-conteiner-generic
 
+erase-conteiner-base-rockylinux: ## apagar a imagem base-rockylinux
+		@make IMAGEMTMP=base-rockylinux8 IMAGEMTMP_VERSAO=$(DOCKER_CONTAINER_VERSAO_PRODUTO) erase-conteiner-generic
 
 erase-conteiner-memcached: ## apagar a imagem memcached
 		@make IMAGEMTMP=memcached IMAGEMTMP_VERSAO=$(DOCKER_CONTAINER_VERSAO_PRODUTO) erase-conteiner-generic
@@ -221,7 +227,7 @@ erase-conteiner-dbadminer: ## apagar a imagem dbadminer
 		@make IMAGEMTMP=dbadminer IMAGEMTMP_VERSAO=$(DOCKER_CONTAINER_VERSAO_PRODUTO) erase-conteiner-generic
 
 ## erase-conteiners-local: target que chama todos os outros targets para apagar as imagens do projeto
-erase-conteiners-local: erase-conteiner-app-ci-agendador erase-conteiner-app-ci erase-conteiner-app-dev erase-conteiner-base-app erase-conteiner-solr erase-conteiner-memcached erase-conteiner-jod erase-conteiner-mailcatcher erase-conteiner-mariadb erase-conteiner-base-mariadb erase-conteiner-sqlserver erase-conteiner-base-sqlserver erase-conteiner-oracle erase-conteiner-base-oracle erase-conteiner-base-centos erase-conteiner-phpmemcachedadmin erase-conteiner-phpmemcachedadmin-base erase-conteiner-openldap erase-conteiner-openldap-base erase-conteiner-haproxy erase-conteiner-haproxy-base erase-conteiner-phpldapadmin erase-conteiner-dbadminer
+erase-conteiners-local: erase-conteiner-app-ci-agendador erase-conteiner-app-ci erase-conteiner-app-dev erase-conteiner-base-app erase-conteiner-solr erase-conteiner-memcached erase-conteiner-jod erase-conteiner-mailcatcher erase-conteiner-mariadb erase-conteiner-base-mariadb erase-conteiner-sqlserver erase-conteiner-base-sqlserver erase-conteiner-oracle erase-conteiner-base-oracle erase-conteiner-base-centos erase-conteiner-base-rockylinux erase-conteiner-phpmemcachedadmin erase-conteiner-phpmemcachedadmin-base erase-conteiner-openldap erase-conteiner-openldap-base erase-conteiner-haproxy erase-conteiner-haproxy-base erase-conteiner-phpldapadmin erase-conteiner-dbadminer
 
 
 #*****************************************************
@@ -241,6 +247,12 @@ build-conteiner-base-centos: ## construir imagem base-centos
 		@make IMAGEMTMP=base-centos7 \
 		      IMAGEMTMP_VERSAO=$(DOCKER_CONTAINER_VERSAO_PRODUTO) \
 					IMAGEMTMP_PATH=base-centos \
+					build-conteiner-generic
+
+build-conteiner-base-rockylinux: ## construir imagem base-rockylinux
+		@make IMAGEMTMP=base-rockylinux8 \
+		      IMAGEMTMP_VERSAO=$(DOCKER_CONTAINER_VERSAO_PRODUTO) \
+					IMAGEMTMP_PATH=base-rockylinux \
 					build-conteiner-generic
 
 
@@ -325,11 +337,11 @@ build-conteiner-solr: verificar-imagem-base-centos
 
 
 ## build-conteiner-base-app construir imagem base-app
-build-conteiner-base-app: verificar-imagem-base-centos
+build-conteiner-base-app: verificar-imagem-base-rockylinux
 		@make IMAGEMTMP=base-app \
 		      IMAGEMTMP_VERSAO=$(DOCKER_CONTAINER_VERSAO_PRODUTO) \
 					IMAGEMTMP_PATH=app/app-base \
-					BUILD_ARGS=--build-arg\ IMAGEM_BASE=$(IMAGEM_BASE_CENTOS):$(IMAGEM_BASE_CENTOS_VERSAO) \
+					BUILD_ARGS=--build-arg\ IMAGEM_BASE=$(IMAGEM_BASE_ROCKYLINUX):$(IMAGEM_BASE_ROCKYLINUX_VERSAO) \
 					build-conteiner-generic
 
 
@@ -423,7 +435,7 @@ build-conteiner-dbadminer: ## construir imagem dbadminer
 
 
 ## build-conteiners: roda todos os outros targets de build na sequencia
-build-conteiners: verificar-git-parameters build-conteiner-base-centos build-conteiner-memcached build-conteiner-jod build-conteiner-mailcatcher build-conteiner-base-mariadb build-conteiner-mariadb build-conteiner-base-sqlserver build-conteiner-sqlserver build-conteiner-base-oracle build-conteiner-oracle build-conteiner-solr build-conteiner-base-app build-conteiner-app-dev build-conteiner-app-ci build-conteiner-app-ci-agendador build-conteiner-phpmemcachedadmin-base build-conteiner-phpmemcachedadmin build-conteiner-openldap-base build-conteiner-openldap build-conteiner-haproxy-base build-conteiner-haproxy build-conteiner-phpldapadmin build-conteiner-dbadminer
+build-conteiners: verificar-git-parameters build-conteiner-base-centos build-conteiner-base-rockylinux build-conteiner-memcached build-conteiner-jod build-conteiner-mailcatcher build-conteiner-base-mariadb build-conteiner-mariadb build-conteiner-base-sqlserver build-conteiner-sqlserver build-conteiner-base-oracle build-conteiner-oracle build-conteiner-solr build-conteiner-base-app build-conteiner-app-dev build-conteiner-app-ci build-conteiner-app-ci-agendador build-conteiner-phpmemcachedadmin-base build-conteiner-phpmemcachedadmin build-conteiner-openldap-base build-conteiner-openldap build-conteiner-haproxy-base build-conteiner-haproxy build-conteiner-phpldapadmin build-conteiner-dbadminer
 
 #*****************************************************
 #*******PUBLISH CONTAINERS TARGETS********************
@@ -448,6 +460,8 @@ publish-container-generic: verificar-docker-registry verificar-parametro-imagemt
 publish-container-base-centos: ## publicar imagem base-centos
 		@make IMAGEMTMP=base-centos7 IMAGEMTMP_VERSAO=$(DOCKER_CONTAINER_VERSAO_PRODUTO) publish-container-generic
 
+publish-container-base-rockylinux: ## publicar imagem base-rockylinux
+		@make IMAGEMTMP=base-rockylinux8 IMAGEMTMP_VERSAO=$(DOCKER_CONTAINER_VERSAO_PRODUTO) publish-container-generic
 
 publish-container-memcached: ## publicar imagem memcached
 		@make IMAGEMTMP=memcached IMAGEMTMP_VERSAO=$(DOCKER_CONTAINER_VERSAO_PRODUTO) publish-container-generic
@@ -538,4 +552,4 @@ publish-container-dbadminer: ## publicar imagem dbadminer
 
 
 ## publish-containers: executa todos os targets de publicacao de imagem na sequencia
-publish-containers: publish-container-base-centos publish-container-memcached publish-container-jod publish-container-mailcatcher publish-container-base-mariadb publish-container-mariadb publish-container-base-sqlserver publish-container-sqlserver publish-container-base-oracle publish-container-oracle publish-container-solr publish-container-base-app publish-container-app-dev publish-container-app-ci publish-container-app-ci-agendador publish-container-phpmemcachedadmin-base publish-container-phpmemcachedadmin publish-container-openldap-base publish-container-openldap publish-container-haproxy-base publish-container-haproxy publish-container-phpldapadmin publish-container-dbadminer
+publish-containers: publish-container-base-centos publish-container-base-rockylinux publish-container-memcached publish-container-jod publish-container-mailcatcher publish-container-base-mariadb publish-container-mariadb publish-container-base-sqlserver publish-container-sqlserver publish-container-base-oracle publish-container-oracle publish-container-solr publish-container-base-app publish-container-app-dev publish-container-app-ci publish-container-app-ci-agendador publish-container-phpmemcachedadmin-base publish-container-phpmemcachedadmin publish-container-openldap-base publish-container-openldap publish-container-haproxy-base publish-container-haproxy publish-container-phpldapadmin publish-container-dbadminer

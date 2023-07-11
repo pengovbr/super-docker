@@ -108,8 +108,9 @@ tests-base: ## target de apoio roda o teste em determinada base de dados via par
 		@echo "*****************************************************"
 		@echo "Base de dados dessa execucao: $(BASE)"
 		@echo "*****************************************************"
-	  make -C ../ destroy
+		make -C ../ destroy
 		make -C ../ base=$(BASE) config
+		sed -i'' -e "s|ENVIRONMENT_VERSION=.*|ENVIRONMENT_VERSION=test|g" ../env.env
 		make -C ../ up
 		make test_selenium_basico1
 		make -C ../ destroy

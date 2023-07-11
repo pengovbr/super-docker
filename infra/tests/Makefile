@@ -212,8 +212,8 @@ ifeq ("$(MODALIDADE)",  "default")
 	cp -f ../envlocal-example-$(BANCO).env ../envlocal.env
 else
 	cp -f test-envlocal-$(MODALIDADE)-$(BANCO).env ../envlocal.env
-endif    
-	
+endif
+	@sed -i'' "s|:latest|:test|" ../envlocal.env
 	
 	@echo "Vamos subir o projeto..."
 	@echo "*****************************************************"
