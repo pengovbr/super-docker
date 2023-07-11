@@ -70,5 +70,7 @@ php -r "
 
 # Apaga o PID antes de reinicar o servidor
 rm -f /run/httpd/httpd.pid
+
+
 # Inicialização do servidor web
-/usr/sbin/httpd -DFOREGROUND
+/bin/sh -c /usr/sbin/php-fpm && /usr/sbin/httpd -DFOREGROUND
