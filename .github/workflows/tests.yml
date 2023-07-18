@@ -11,5 +11,6 @@ jobs:
       - name: Run make tests containers
         env: # Or as an environment variable
           GITPASS_REPO_MODULOS: ${{ secrets.GITPASS_REPO_MODULOS }}
-          GITUSER_REPO_MODULOS: ${{ secrets.GITUSER_REPO_MODULOS:}}
+          GITUSER_REPO_MODULOS: ${{ secrets.GITUSER_REPO_MODULOS }}
+          
         run: cd containers/tests; make getenv-test; make test-containers
