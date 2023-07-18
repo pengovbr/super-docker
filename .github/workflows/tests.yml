@@ -4,6 +4,7 @@ on: [push, pull_request]
 env: # Or as an environment variable
   GITPASS_REPO_MODULOS: ${{ secrets.GITPASS_REPO_MODULOS }}
   GITUSER_REPO_MODULOS: ${{ secrets.GITUSER_REPO_MODULOS }}
+  ENVTEST: 'teste de env'
   
 jobs:
   test:
@@ -11,10 +12,7 @@ jobs:
     
     
     steps:
-      - shell: bash
-        run: |
-         echo 'Olá "$GITPASS_REPO_MODULOS"'
       - name: Fetch Pull Request branch
         uses: actions/checkout@v3
       - name: Run make tests containers
-        run: echo "$GITUSER_REPO_MODULOS" ; cd containers/tests; make getenv-test; make test-containers
+        run: echo "Olá $GITUSER_REPO_MODULOS  - $ENVTEST" ; cd containers/tests; make getenv-test; make test-containers
