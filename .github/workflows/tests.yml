@@ -12,7 +12,12 @@ jobs:
     
     
     steps:
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Fetch Pull Request branch
         uses: actions/checkout@v3
       - name: Run make tests containers
-        run: echo "Olá $GITUSER_REPO_MODULOS  - $ENVTEST" ; cd containers/tests; make getenv-test; make test-containers
+        run: cd containers/tests; make getenv-test; make test-containers
