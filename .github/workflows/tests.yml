@@ -1,7 +1,10 @@
 name: Unit and Functional Testing
 
 on: [push, pull_request]
-
+env: # Or as an environment variable
+  GITPASS_REPO_MODULOS: ${{ secrets.GITPASS_REPO_MODULOS }}
+  GITUSER_REPO_MODULOS: ${{ secrets.GITUSER_REPO_MODULOS }}
+  
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -9,8 +12,4 @@ jobs:
       - name: Fetch Pull Request branch
         uses: actions/checkout@v3
       - name: Run make tests containers
-        env: # Or as an environment variable
-          GITPASS_REPO_MODULOS: ${{ secrets.GITPASS_REPO_MODULOS }}
-          GITUSER_REPO_MODULOS: ${{ secrets.GITUSER_REPO_MODULOS }}
-          
-        run: cd containers/tests; make getenv-test; make test-containers
+        run: echo "$GITUSER_REPO_MODULOS" ; cd containers/tests; make getenv-test; make test-containers
