@@ -1,0 +1,12 @@
+name: Unit and Functional Testing
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fetch Pull Request branch
+        uses: actions/checkout@v3
+      - name: Run make tests containers
+        run: cd containers/tests; make getenv-test; make test
