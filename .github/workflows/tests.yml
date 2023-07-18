@@ -2,8 +2,8 @@ name: Unit and Functional Testing
 
 on: [push, pull_request]
 env: # Or as an environment variable
-  GITPASS_REPO_MODULOS: ${{ secrets.GITPASS_REPO_MODULOS }}
-  GITUSER_REPO_MODULOS: ${{ secrets.GITUSER_REPO_MODULOS }}
+  GITPASS_REPO_MODULOS: ${{ secrets.GITPASSREPOMODULOS }}
+  GITUSER_REPO_MODULOS: ${{ secrets.GITUSERREPOMODULOS }}
   ENVTEST: 'teste de env'
   
 jobs:
