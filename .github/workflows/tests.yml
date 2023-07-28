@@ -20,4 +20,12 @@ jobs:
       - name: Fetch Pull Request branch
         uses: actions/checkout@v3
       - name: Run make tests containers
-        run: cd containers/tests; make getenv-test; make test-containers
+        run: cd containers/tests; make getenv-test; make test-containers; cd ../../
+      - name: Fetch código do SUPER
+        uses: actions/checkout@v3
+        with:
+            repository: supergovbr/super
+            token: ${{ secrets.GH_PAT }}
+            path: super
+      - name: Run make tests app
+        run: pwd; cd dev/tests; SUPER_PATH=../../super/src make tests-all-bases; cd ../../
