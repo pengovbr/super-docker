@@ -4,7 +4,7 @@ on: [push, pull_request]
 env: # Or as an environment variable
   GITPASS_REPO_MODULOS: ${{ secrets.GITPASSREPOMODULOS }}
   GITUSER_REPO_MODULOS: ${{ secrets.GITUSERREPOMODULOS }}
-  SUPER_PATH: ../../super/src
+  SUPER_PATH: /home/runner/work/super-docker/super-docker/super/src
   
 jobs:
   test:
