@@ -4,7 +4,7 @@ on: [push, pull_request]
 env: # Or as an environment variable
   GITPASS_REPO_MODULOS: ${{ secrets.GITPASSREPOMODULOS }}
   GITUSER_REPO_MODULOS: ${{ secrets.GITUSERREPOMODULOS }}
-  ENVTEST: 'teste de env'
+  SUPER_PATH: ../../super/src
   
 jobs:
   test:
@@ -28,4 +28,4 @@ jobs:
             token: ${{ secrets.GH_PAT }}
             path: super
       - name: Run make tests app
-        run: pwd; cd dev/tests; SUPER_PATH=../../super/src make tests-all-bases; cd ../../
+        run: pwd; cd dev/tests; make tests-all-bases; cd ../../
