@@ -8,13 +8,11 @@ yum install -y \
 	cronie \
 	gearmand \
 	libgearman \
-	libgearman-devel \
 	php-pecl-gearman \
-	python2
+	supervisor
 
 
 #Instalação Supervisor
-pip2 install "supervisor>=4"
 mkdir -p /etc/supervisor/
 #echo_supervisord_conf > /etc/supervisor/supervisord.conf
 mv /tmp/assets/conf/supervisord.conf /etc/supervisor/supervisord.conf
