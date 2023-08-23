@@ -54,7 +54,6 @@ php -r "
     \$conexao->executarSql(\"update sistema set pagina_inicial='$HOST_URL/sip' where sigla='SIP'\");
     \$conexao->executarSql(\"update sistema set pagina_inicial='$HOST_URL/sei/inicializar.php' where sigla='SEI'\");
     \$conexao->executarSql(\"update sistema set web_service='$HOST_URL/sei/controlador_ws.php?servico=sip' where sigla='SEI'\");
-    \$conexao->setBolScript(true);
     \$objScriptRN = new ScriptRN();
     \$objScriptRN->atualizarSequencias();    
 " || exit 1
@@ -63,7 +62,6 @@ php -r "
 php -r "
     require_once '/opt/sei/web/SEI.php';
     \$conexao = BancoSEI::getInstance();
-    \$conexao->setBolScript(true);
     \$objScriptRN = new ScriptRN();
     \$objScriptRN->atualizarSequencias();
 " || exit 1
