@@ -7,8 +7,8 @@ export PATH=$ORACLE_HOME/bin:$PATH
 export ORACLE_SID=XE
 export NLS_LANG=PORTUGUESE_BRAZIL.WE8MSWIN1252
 
-mv /tmp/sei_super_4.0.x.1_BD_Ref_Exec.dmp /tmp/sei_4_0_0_BD_Ref_Exec.dmp
-mv /tmp/sip_super_4.0.x.1_BD_Ref_Exec.dmp /tmp/sip_4_0_0_BD_Ref_Exec.dmp
+mv /tmp/sei_4.0.x.1_BD_Ref_Exec.dmp /tmp/sei_4_0_0_BD_Ref_Exec.dmp
+mv /tmp/sip_4.0.x.1_BD_Ref_Exec.dmp /tmp/sip_4_0_0_BD_Ref_Exec.dmp
 
 # Inicialização do servidor
 /usr/sbin/startup.sh

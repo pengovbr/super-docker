@@ -12,8 +12,8 @@ export SA_PASSWORD='yourStrong(!)Password'
 /opt/mssql/bin/sqlservr &
 sleep 30
 
-mv /tmp/sip_super_4.0.x.1_BD_Ref_Exec.bak /tmp/sip_sqlserver.bak
-mv /tmp/sei_super_4.0.x.1_BD_Ref_Exec.bak /tmp/sei_sqlserver.bak
+mv /tmp/sip_4.0.x.1_BD_Ref_Exec.bak /tmp/sip_sqlserver.bak
+mv /tmp/sei_4.0.x.1_BD_Ref_Exec.bak /tmp/sei_sqlserver.bak
 
 tsql -S localhost -U sa -P $SA_PASSWORD < /tmp/restore.sql
 

@@ -15,8 +15,8 @@ ENV TERM xterm \
     ORACLE_ALLOW_REMOTE=true \
     NLS_LANG=PORTUGUESE_BRAZIL.WE8MSWIN1252
 
-ADD ${GIT_DB_REF}/oracle/v4.0.x.1/sei_super_4.0.x.1_BD_Ref_Exec.dmp \
-    ${GIT_DB_REF}/oracle/v4.0.x.1/sip_super_4.0.x.1_BD_Ref_Exec.dmp \
+ADD ${GIT_DB_REF}/oracle/v4.0.x.1/sei_4.0.x.1_BD_Ref_Exec.dmp \
+    ${GIT_DB_REF}/oracle/v4.0.x.1/sip_4.0.x.1_BD_Ref_Exec.dmp \
     assets/pre-install.sql \
     assets/sei-config.sql \
     assets/sip-config.sql \

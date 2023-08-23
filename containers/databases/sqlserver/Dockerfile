@@ -19,8 +19,8 @@ ENV TERM xterm \
 
 ADD assets/install.sh \
     assets/restore.sql \
-    ${GIT_DB_REF}/sqlserver/v4.0.x.1/sei_super_4.0.x.1_BD_Ref_Exec.bak \
-    ${GIT_DB_REF}/sqlserver/v4.0.x.1/sip_super_4.0.x.1_BD_Ref_Exec.bak \
+    ${GIT_DB_REF}/sqlserver/v4.0.x.1/sei_4.0.x.1_BD_Ref_Exec.bak \
+    ${GIT_DB_REF}/sqlserver/v4.0.x.1/sip_4.0.x.1_BD_Ref_Exec.bak \
     /tmp/
 
 RUN bash /tmp/install.sh
