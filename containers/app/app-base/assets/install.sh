@@ -94,7 +94,7 @@ echo "extension=uploadprogress.so" > /etc/php.d/uploadprogress.ini
 cd -
 
 # wkhtml
-rpm -Uvh wkhtmltox-0.12.6-1.centos8.x86_64.rpm
+rpm -Uvh wkhtmltox-0.12.6.1-2.almalinux8.x86_64.rpm
 
 # fonts libraries
 rpm -Uvh msttcore-fonts-2.0-3.noarch.rpm
