@@ -1,0 +1,17 @@
+name: Adiciona issues de melhoria para projeto específico
+
+on:
+  issues:
+    types:
+      - labeled
+
+jobs:
+  add-to-project:
+    name: Adiciona issues de melhoria para projeto da Carolina
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/add-to-project@v0.5.0
+        with:
+          project-url: https://github.com/orgs/pengovbr/projects/16
+          github-token: ${{ secrets.PAT_PARA_ISSUES_MELHORIA }}
+          labeled: melhoria
