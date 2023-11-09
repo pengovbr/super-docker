@@ -2,7 +2,7 @@
 # Dockerfile de construcao do container APP com os pacotes basicos
 ################################################################################
 
-FROM php:7.3-zts-alpine3.14
+FROM alpine:3.13
 
 RUN apk add --no-cache \
       apache2 \ 
@@ -44,7 +44,7 @@ RUN apk add --no-cache \
       ;
 
 # Pacotes para o wkhtmltopdf
-RUN apk add --update --no-cache \
+RUN apk add --no-cache \
     libgcc libstdc++ libx11 glib libxrender libxext libintl \
     ttf-dejavu ttf-droid ttf-freefont ttf-liberation 
 
@@ -54,12 +54,16 @@ COPY --from=madnight/docker-alpine-wkhtmltopdf:0.12.5-alpine3.13 \
 
 RUN apk add --no-cache openjdk8
 
-COPY assets/sei.ini /etc/php7/conf.d/
+COPY assets/sei.ini /etc/php7/conf.d/99_sei.ini
 COPY assets/xdebug.ini /etc/php7/conf.d/99_xdebug.ini
 COPY assets/sei.conf /etc/apache2/conf.d/ 
 
 # Pasta para arquivos externos
 RUN mkdir -p /var/sei/arquivos && chown apache.apache /var/sei/arquivos
+
+# Suporte para atualização da imagem. O script do SEI está fixo no bash
+RUN apk add --no-cache \
+    bash;
 
 EXPOSE 80
 CMD ["httpd", "-DFOREGROUND"]
