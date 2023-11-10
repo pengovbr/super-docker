@@ -31,7 +31,6 @@ RUN apk add --no-cache \
       php7-pecl-mcrypt \
       php7-pecl-memcache \
       php7-pecl-memcached \
-      php7-pecl-uploadprogress \
       php7-pecl-xdebug \
       php7-pspell \
       php7-shmop \
@@ -42,6 +41,11 @@ RUN apk add --no-cache \
       php7-zip \
       php7-zlib \
       ;
+
+# Utiliza versão 1.1.4 pois há uma segmentation fault no 1.1.3
+RUN apk add --no-cache \
+    --repository=https://dl-cdn.alpinelinux.org/alpine/v3.14/community/ \
+    php7-pecl-uploadprogress;
 
 # Pacotes para o wkhtmltopdf
 RUN apk add --no-cache \
@@ -61,7 +65,7 @@ COPY assets/sei.conf /etc/apache2/conf.d/
 # Pasta para arquivos externos
 RUN mkdir -p /var/sei/arquivos && chown apache.apache /var/sei/arquivos
 
-# Suporte para atualização da imagem. O script do SEI está fixo no bash
+# Suporte para atualização do SEI. O script de atualização do SEI está fixo no bash
 RUN apk add --no-cache \
     bash;
 
