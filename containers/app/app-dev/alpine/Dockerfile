@@ -30,7 +30,6 @@ RUN apk add --no-cache \
       php7-pecl-apcu \
       php7-pecl-mcrypt \
       php7-pecl-memcache \
-      php7-pecl-memcached \
       php7-pecl-xdebug \
       php7-pspell \
       php7-shmop \
