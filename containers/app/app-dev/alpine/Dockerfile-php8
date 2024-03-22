@@ -1,0 +1,70 @@
+################################################################################
+# Dockerfile de construcao do container APP com os pacotes basicos
+################################################################################
+
+FROM alpine:3.19
+
+RUN apk add --no-cache \
+      apache2 \ 
+      apache2-http2 \
+      php82-apache2 \
+      php82-bcmath \
+      php82-calendar \
+      php82-ctype \
+      php82-curl \
+      php82-dom \
+      php82-fileinfo \
+      php82-gd \
+      php82-gettext \
+      php82-gmp \
+      php82-imap \
+      php82-intl \
+      php82-ldap \
+      php82-mbstring \
+      php82-mysqli \
+      php82-odbc \
+      php82-pcntl \
+      php82-pdo \
+      php82-pear \
+      php82-pecl-apcu \
+      php82-pecl-mcrypt \
+      php82-pecl-memcache \
+      php82-pecl-xdebug \
+      php82-pspell \
+      php82-shmop \
+      php82-snmp \
+      php82-soap \
+      php82-xml \
+      php82-zip \
+      php82-zlib \
+      php82-pecl-uploadprogress;
+
+# Pacotes para o wkhtmltopdf
+RUN apk add --no-cache \
+    libgcc libstdc++ libx11 glib libxrender libxext libintl \
+    ttf-dejavu ttf-droid ttf-freefont ttf-liberation 
+
+# Utiliza versão 1.1.4 pois há uma segmentation fault no 1.1.3
+RUN apk add --no-cache \
+    --repository=https://dl-cdn.alpinelinux.org/alpine/v3.18/community/ \
+    libssl1.1;
+
+# wkhtmltopdf #
+COPY --from=madnight/docker-alpine-wkhtmltopdf:0.12.5-alpine3.13 \
+    /bin/wkhtmltopdf /bin/wkhtmltopdf
+
+RUN apk add --no-cache openjdk8
+
+COPY assets/sei.ini /etc/php82/conf.d/99_sei.ini
+COPY assets/xdebug.ini /etc/php82/conf.d/99_xdebug.ini
+COPY assets/sei.conf /etc/apache2/conf.d/ 
+
+# Pasta para arquivos externos
+RUN mkdir -p /var/sei/arquivos && chown apache.apache /var/sei/arquivos
+
+# Suporte para atualização do SEI. O script de atualização do SEI está fixo no bash
+RUN apk add --no-cache \
+    bash;
+
+EXPOSE 80
+CMD ["httpd", "-DFOREGROUND"]
