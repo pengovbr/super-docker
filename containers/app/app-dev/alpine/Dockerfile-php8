@@ -49,15 +49,30 @@ RUN apk add --no-cache \
 
 # Pacotes para o wkhtmltopdf
 RUN apk add --no-cache \
-    libgcc libstdc++ libx11 glib libxrender libxext libintl \
-    ttf-dejavu ttf-droid ttf-freefont ttf-liberation 
-
-RUN apk add --no-cache \
-    --repository=https://dl-cdn.alpinelinux.org/alpine/v3.18/community/ \
-    libssl1.1;
+    libstdc++ \
+    libx11 \
+    libxrender \
+    libxext \
+    libssl3 \
+    ca-certificates \
+    fontconfig \
+    freetype \
+    ttf-dejavu \
+    ttf-droid \
+    ttf-freefont \
+    ttf-liberation \
+    # more fonts
+  && apk add --no-cache --virtual .build-deps \
+    msttcorefonts-installer \
+  # Install microsoft fonts
+  && update-ms-fonts \
+  && fc-cache -f \
+  # Clean up when done
+  && rm -rf /tmp/* \
+  && apk del .build-deps
 
 # wkhtmltopdf #
-COPY --from=madnight/docker-alpine-wkhtmltopdf:0.12.5-alpine3.13 \
+COPY --from=surnet/alpine-wkhtmltopdf:3.19.1-0.12.6-small \
     /bin/wkhtmltopdf /bin/wkhtmltopdf
 
 RUN apk add --no-cache openjdk8
@@ -67,7 +82,7 @@ COPY assets/xdebug.ini /etc/php82/conf.d/99_xdebug.ini
 COPY assets/sei.conf /etc/apache2/conf.d/ 
 
 # Pasta para arquivos externos
-RUN mkdir -p /var/sei/arquivos && chown apache.apache /var/sei/arquivos
+RUN mkdir -p /var/sei/arquivos && chown -R apache.apache /var/sei/arquivos
 
 # Suporte para atualização do SEI. O script de atualização do SEI está fixo no bash
 RUN apk add --no-cache \
