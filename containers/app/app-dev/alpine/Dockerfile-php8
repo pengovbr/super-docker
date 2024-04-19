@@ -7,6 +7,7 @@ FROM alpine:3.19
 RUN apk add --no-cache \
       apache2 \ 
       apache2-http2 \
+      gnu-libiconv \
       php82-apache2 \
       php82-bcmath \
       php82-bz2 \
@@ -79,14 +80,17 @@ RUN apk add --no-cache openjdk8
 
 COPY assets/sei.ini /etc/php82/conf.d/99_sei.ini
 COPY assets/xdebug.ini /etc/php82/conf.d/99_xdebug.ini
-COPY assets/sei.conf /etc/apache2/conf.d/ 
+COPY assets/sei.conf /etc/apache2/conf.d/
+COPY assets/cron.conf /tmp/cron.conf
+RUN  cat /tmp/cron.conf >> /etc/crontabs/root 
 
 # Pasta para arquivos externos
-RUN mkdir -p /var/sei/arquivos && chown -R apache.apache /var/sei/arquivos
+RUN mkdir -p /var/sei/arquivos && chown -R apache.apache /var/sei/arquivos && chown 777 /tmp
 
+RUN mkdir -p /var/log/sei && mkdir -p /var/log/sip
 # Suporte para atualização do SEI. O script de atualização do SEI está fixo no bash
 RUN apk add --no-cache \
     bash curl;
 
 EXPOSE 80
-CMD ["httpd", "-DFOREGROUND"]
+CMD ["sh", "-c", "crond && httpd -DFOREGROUND"]
