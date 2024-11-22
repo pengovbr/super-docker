@@ -1,0 +1,75 @@
+################################################################################
+# Dockerfile de construcao do container APP com os pacotes basicos
+################################################################################
+
+FROM alpine:3.12
+
+RUN apk add --no-cache \
+      apache2 \ 
+      apache2-http2 \
+      php7-apache2 \
+      php7-bcmath \
+      php7-calendar \
+      php7-ctype \
+      php7-curl \
+      php7-dom \
+      php7-gd \
+      php7-gettext \
+      php7-gmp \
+      php7-imap \
+      php7-intl \
+      php7-ldap \
+      php7-mbstring \
+      php7-mcrypt \
+      php7-mysqli \
+      php7-odbc \
+      php7-pcntl \
+      php7-pdo \
+      php7-pear \
+      php7-pecl-apcu \
+      php7-pecl-mcrypt \
+      php7-pecl-memcache \
+      php7-pecl-memcached \
+      php7-pecl-uploadprogress \
+      php7-pspell \
+      php7-shmop \
+      php7-snmp \
+      php7-soap \
+      php7-xml \
+      php7-xmlrpc \
+      php7-zip \
+      php7-zlib \
+      ;
+
+# Pacotes para o wkhtmltopdf
+RUN apk add --update --no-cache \
+    libgcc libstdc++ libx11 glib libxrender libxext libintl \
+    ttf-dejavu ttf-droid ttf-freefont ttf-liberation ttf-ubuntu-font-family
+
+# wkhtmltopdf #
+COPY --from=madnight/alpine-wkhtmltopdf-builder:0.12.5-alpine3.10-866998106 \
+    /bin/wkhtmltopdf /bin/wkhtmltopdf
+      
+COPY assets/sei.ini /etc/php7/conf.d/
+COPY assets/sei.conf /etc/apache2/conf.d/ 
+
+RUN apk add --no-cache openjdk8
+
+RUN apk add curl && \
+    curl -O https://download.microsoft.com/download/e/4/e/e4e67866-dffd-428c-aac7-8d28ddafb39b/msodbcsql17_17.6.1.1-1_amd64.apk && \
+    curl -O https://download.microsoft.com/download/e/4/e/e4e67866-dffd-428c-aac7-8d28ddafb39b/mssql-tools_17.6.1.1-1_amd64.apk && \
+    apk add --allow-untrusted msodbcsql17_17.6.1.1-1_amd64.apk && \
+    apk add --allow-untrusted mssql-tools_17.6.1.1-1_amd64.apk && \
+    ln -sfnv /opt/mssql-tools/bin/* /usr/bin && \
+    PECL_DEPS='unixodbc-dev php7-dev m4 perl autoconf dpkg dpkg-dev libmagic file binutils isl libgomp libatomic libgphobos mpfr4 mpc1 gcc musl-dev libc-dev g++ make re2c' && \
+    apk add --no-cache $PECL_DEPS && \
+    pecl install sqlsrv && \
+    pecl install pdo_sqlsrv && \
+    apk del $PECL_DEPS curl
+
+RUN echo extension=pdo_sqlsrv.so >> `php --ini | grep "Scan for additional .ini files" | sed -e "s|.*:\s*||"`/10_pdo_sqlsrv.ini
+
+RUN echo extension=sqlsrv.so >> `php --ini | grep "Scan for additional .ini files" | sed -e "s|.*:\s*||"`/20_sqlsrv.ini
+
+EXPOSE 80
+CMD ["httpd", "-DFOREGROUND"]
